@@ -1,0 +1,123 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Return to the Archive — Login</title>
+
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						colors: {
+							parchment: '#FDF5E6',
+							forest: '#2F4F4F',
+							midnight: '#2C3E50',
+							mahogany: '#4B2E2A'
+						},
+						fontFamily: {
+							serif: ['Playfair Display', 'serif'],
+							sans: ['Inter', 'ui-sans-serif', 'system-ui']
+						}
+					}
+				}
+			}
+		</script>
+
+		<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+		<style>
+			:root{--parchment:#FDF5E6;--forest:#2F4F4F;--midnight:#2C3E50;--mahogany:#4B2E2A}
+			body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:var(--parchment)}
+			.serif{font-family:'Playfair Display', serif;color:var(--parchment)}
+			/* richer library background (mahogany shelves, warm tones) */
+			.bg-library{background-image:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=');background-size:cover;background-position:center}
+
+			/* glass / parchment card */
+			.glass {
+				background: linear-gradient(180deg, rgba(253,245,230,0.85) 0%, rgba(255,255,255,0.55) 100%);
+				backdrop-filter: blur(6px) saturate(120%);
+				-webkit-backdrop-filter: blur(6px) saturate(120%);
+				border: 1px solid rgba(255,255,255,0.12);
+				box-shadow: 0 10px 40px rgba(17,24,39,0.5);
+			}
+
+			/* subtle paper grain overlay */
+			.grain:after{
+				content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(transparent 30%, rgba(0,0,0,0.02) 100%), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.03"/></svg>');mix-blend-mode:multiply;opacity:0.9}
+
+			.focus-forest:focus{border-color:var(--forest);box-shadow:0 0 0 3px rgba(47,79,79,0.08)}
+
+			.quill {width:96px;height:96px;border-radius:14px;background:rgba(75,46,42,0.12);display:flex;align-items:center;justify-content:center}
+
+			/* make card size symmetric and centered — enlarged for readability */
+			main.relative{display:flex;align-items:center;justify-content:center;padding-left:1rem;padding-right:1rem}
+			section.glass{max-width:980px;margin:0 auto;padding:4rem}
+			@media (max-width:1280px){
+				section.glass{max-width:880px;padding:3.5rem}
+			}
+			@media (max-width:1024px){
+				section.glass{max-width:760px;padding:2.75rem}
+			}
+			@media (max-width:640px){
+				section.glass{padding:2rem}
+			}
+
+			/* ensure inputs and button line up and have consistent radius */
+			input[type="text"], input[type="password"]{border-radius:10px}
+			button[type="submit"]{border-radius:10px;padding-top:0.9rem;padding-bottom:0.9rem}
+		</style>
+	</head>
+		<body class="min-h-screen bg-library bg-fixed flex items-center justify-center py-16 px-6">
+
+			<div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/50"></div>
+
+			<main class="relative w-full max-w-lg mx-auto grain">
+				<section class="glass relative rounded-3xl p-8 md:p-10">
+					<div class="flex flex-col items-center gap-4">
+						<div class="quill">
+							<!-- quill icon -->
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10" fill="none">
+								<path d="M3 21s6-6 11-11c2-2 3-4 3-4s-2 1-4 3C11 8 5 14 3 21z" stroke="#4B2E2A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M14 7c2 2 4 3 6 3" stroke="#4B2E2A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+
+						<h1 class="serif text-5xl md:text-6xl">Library</h1>
+						<p class="text-lg md:text-base text-parchment/90">A quiet reading room — sign in to continue.</p>
+					</div>
+
+					<div class="mt-6">
+						{% if messages %}
+							{% for message in messages %}
+								<div class="mb-3 rounded-md px-3 py-2 text-sm bg-red-800/20 text-red-100">{{ message }}</div>
+							{% endfor %}
+						{% endif %}
+
+						<form method="post" class="mt-5 space-y-4" novalidate>
+							{% csrf_token %}
+
+							{% if form.non_field_errors %}
+								<div class="text-sm text-red-200 bg-red-900/20 p-2 rounded">{{ form.non_field_errors }}</div>
+							{% endif %}
+
+							<div>
+								<label for="id_student_id" class="block text-lg mb-3 text-mahogany/90">Student ID</label>
+								<input id="id_student_id" name="student_id" type="text" autocomplete="username" required
+									class="w-full rounded-lg bg-parchment/60 py-5 px-5 text-midnight placeholder-midnight/60 border border-transparent focus:outline-none focus:ring-0 focus:border-forest transition focus-forest text-lg"
+									value="{{ form.student_id.value|default:'' }}">
+								{% if form.student_id.errors %}
+									<p class="mt-1 text-xs text-red-200">{{ form.student_id.errors.0 }}</p>
+								{% endif %}
+							</div>
+							<button type="submit" class="w-full rounded-lg bg-forest text-parchment font-semibold hover:brightness-110 transition text-lg py-4">Continue</button>
+						</form>
+					</div>
+				</section>
+
+				<p class="text-center text-xs text-parchment/70 mt-4">&copy; Library Sanctuary</p>
+			</main>
+
+		</body>
+	</html>

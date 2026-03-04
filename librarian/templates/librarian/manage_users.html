@@ -1,0 +1,55 @@
+{% extends 'librarian/base.html' %}
+
+{% block content %}
+<h2>👨🏻‍🏫 Manage Users</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            + Add User
+        </button>
+    </div>
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="ssid" class="form-control me-2" placeholder="Search SSID..." value="{{ request.GET.ssid }}">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+        </form>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead><tr><th>SSID</th><th>Username</th><th>Email</th><th>Phone</th><th>Status</th></tr></thead>
+    <tbody>
+        {% for member in members %}
+        <tr>
+            <td>{{ member.ssid }}</td>
+            <td>{{ member.name }}</td>
+            <td>{{ member.email }}</td>
+            <td>{{ member.phone }}</td>
+            <td>
+                <form method="post">{% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="ssid" value="{{ member.ssid }}"><button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove user?')">Remove</button></form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Add New User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <div class="mb-3"><label>SSID</label><input type="text" name="ssid" class="form-control" required></div>
+                    <div class="mb-3"><label>Username</label><input type="text" name="name" class="form-control" required></div>
+                    <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control"></div>
+                    <div class="mb-3"><label>Phone Number</label><input type="text" name="phone" class="form-control"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Confirm</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

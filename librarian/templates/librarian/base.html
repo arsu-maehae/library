@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Admin System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #fd7e14; /* Orange */
+            --secondary-color: #6c757d; /* Gray */
+            --success-color: #28a745; /* Green */
+            --dark-color: #343a40; /* Dark Gray */
+            --light-bg: #f4f6f9; /* Light Gray Background */
+            --white: #ffffff;
+            --border-radius-lg: 12px;
+            --border-radius-sm: 8px;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar Customization */
+        .navbar {
+            background-color: var(--white) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        .nav-link {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            margin: 0 5px;
+            padding: 8px 15px !important;
+            border-radius: var(--border-radius-sm);
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+            background-color: rgba(253, 126, 20, 0.1);
+        }
+        .navbar-text {
+            color: var(--dark-color) !important;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+             border-radius: var(--border-radius-sm);
+             font-weight: 500;
+             padding: 0.5rem 1.25rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #e36d0a;
+            border-color: #e36d0a;
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--white);
+        }
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: var(--white);
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
+        }
+        /* Override for login page which uses bg-primary */
+        .card-header.bg-primary {
+            background-color: var(--primary-color) !important;
+            color: var(--white) !important;
+        }
+
+        /* Tables */
+        .table-responsive {
+            background-color: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            padding: 15px;
+            overflow: hidden;
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .table thead th {
+            background-color: var(--dark-color);
+            color: var(--white);
+            border: none;
+            font-weight: 500;
+        }
+        .table thead th:first-child { border-top-left-radius: var(--border-radius-sm); }
+        .table thead th:last-child { border-top-right-radius: var(--border-radius-sm); }
+        .table-hover tbody tr:hover {
+            background-color: rgba(253, 126, 20, 0.08);
+        }
+        
+        /* Typography */
+        h2 {
+            color: var(--dark-color);
+            font-weight: 300;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+        
+        /* Forms */
+        .form-control, .form-select {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #e0e0e0;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(253, 126, 20, 0.25);
+        }
+
+        /* Modals */
+        .modal-content {
+            border-radius: var(--border-radius-lg);
+            border: none;
+        }
+        .modal-header { border-bottom: 1px solid #eee; }
+        .modal-footer { border-top: 1px solid #eee; }
+
+        /* Badges */
+        .badge {
+            border-radius: 50rem;
+            padding: 0.4em 0.8em;
+            font-weight: 600;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Librarian Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'manage_books' %}active{% endif %}" href="{% url 'manage_books' %}">📕 Books</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'active_borrows' %}active{% endif %}" href="{% url 'active_borrows' %}">📜 Transactions</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'borrow_process' %}active{% endif %}" href="{% url 'borrow_process' %}">🎒 Borrow</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'return_book' %}active{% endif %}" href="{% url 'return_book' %}">📓 Return</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}" href="{% url 'manage_users' %}">👨🏻‍🏫 Users</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'settings_view' %}active{% endif %}" href="{% url 'settings_view' %}">⚙️ Settings</a></li>
+                </ul>
+                <span class="navbar-text">
+                    Admin: {{ user.username }}
+                </span>
+                <form action="{% url 'logout' %}" method="post" class="d-inline ms-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

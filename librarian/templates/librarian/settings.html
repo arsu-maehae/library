@@ -1,0 +1,77 @@
+{% extends 'librarian/base.html' %}
+
+{% block content %}
+<h2>⚙️ Settings</h2>
+<div class="row">
+    <!-- Left Column: Admin Profile -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center d-flex flex-column align-items-center">
+                <div class="mb-3 mt-3">
+                    <!-- Generate Avatar from Username -->
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=fd7e14&color=fff&size=128&bold=true" 
+                         class="rounded-circle shadow-sm" 
+                         alt="Admin Profile" 
+                         style="width: 128px; height: 128px; object-fit: cover;">
+                </div>
+                <h4 class="card-title mb-1">{{ user.username }}</h4>
+                <p class="text-muted mb-4">Administrator</p>
+                
+                <div class="w-100 text-start px-3">
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Email</small>
+                        <span class="fw-medium">{{ user.email|default:"-" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Date Joined</small>
+                        <span class="fw-medium">{{ user.date_joined|date:"d M Y" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Last Login</small>
+                        <span class="fw-medium">{{ user.last_login|date:"d M Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Change Password -->
+    <div class="col-md-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-primary">Change Password</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text text-muted small">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="mt-4 text-end">
+                        <button type="submit" class="btn btn-primary px-4">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add Bootstrap classes to Django form fields automatically
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('input[type="password"]').forEach(input => {
+            input.classList.add('form-control');
+        });
+    });
+</script>
+{% endblock %}

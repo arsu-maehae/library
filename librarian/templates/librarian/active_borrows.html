@@ -1,0 +1,44 @@
+{% extends 'librarian/base.html' %}
+
+{% block content %}
+<h2>📜 Transactions Dashboard</h2>
+<form class="mb-4 mt-3" method="get">
+    <div class="input-group">
+        <input type="text" name="ssid" class="form-control" placeholder="Search by Borrower SSID..." value="{{ request.GET.ssid }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Book ID</th>
+                <th>Book Name</th>
+                <th>Author</th>
+                <th>Borrower SSID</th>
+                <th>Start Date</th>
+                <th>Due Date</th>
+                <th>Fine</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.book.id }}</td>
+                <td>{{ record.book.name }}</td>
+                <td>{{ record.book.author }}</td>
+                <td>{{ record.member.ssid }}</td>
+                <td>{{ record.start_date }}</td>
+                <td>{{ record.due_date }}</td>
+                <td class="text-danger fw-bold">{{ record.fine }}</td>
+                <td>
+                    <form method="post">{% csrf_token %}<input type="hidden" name="record_id" value="{{ record.id }}"><button type="submit" class="btn btn-success btn-sm">Return</button></form>
+                </td>
+            </tr>
+            {% empty %}<tr><td colspan="8" class="text-center">No active borrows found.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

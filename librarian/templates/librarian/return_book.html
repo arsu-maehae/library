@@ -1,0 +1,54 @@
+{% extends 'librarian/base.html' %}
+
+{% block content %}
+<h2>📓 Return Book </h2>
+
+<form class="mb-4 mt-3" method="get">
+    <div class="input-group">
+        <input type="text" name="ssid" class="form-control" placeholder="Enter Member SSID to search..." value="{{ ssid }}" required>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+{% if member %}
+    <div class="alert alert-info">
+        <strong>Member:</strong> {{ member.name }} ({{ member.ssid }})
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Book ID</th>
+                    <th>Book Name</th>
+                    <th>Borrowed Date</th>
+                    <th>Due Date</th>
+                    <th>Returned Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.book.id }}</td>
+                    <td>{{ record.book.name }}</td>
+                    <td>{{ record.start_date }}</td>
+                    <td>{{ record.due_date }}</td>
+                    <td>{% if record.return_date %}{{ record.return_date }}{% else %}-{% endif %}</td>
+                    <td>
+                        {% if record.return_date %}
+                            <span class="badge bg-secondary">Returned</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Active</span>
+                            <form method="post" class="d-inline ms-2">{% csrf_token %}<input type="hidden" name="record_id" value="{{ record.id }}"><button type="submit" class="btn btn-success btn-sm">Return</button></form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}<tr><td colspan="6" class="text-center">No history found for this user.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% elif ssid %}
+    <div class="alert alert-warning">Member with SSID "{{ ssid }}" not found.</div>
+{% endif %}
+{% endblock %}

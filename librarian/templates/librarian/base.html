@@ -3,191 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Admin System</title>
+    <title>Library Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #fd7e14; /* Orange */
-            --secondary-color: #6c757d; /* Gray */
-            --success-color: #28a745; /* Green */
-            --dark-color: #343a40; /* Dark Gray */
-            --light-bg: #f4f6f9; /* Light Gray Background */
-            --white: #ffffff;
-            --border-radius-lg: 12px;
-            --border-radius-sm: 8px;
+            --cream:       #faf7f2;
+            --cream-dark:  #f2ede4;
+            --cream-card:  #fffef9;
+            --brown:       #5c3d2e;
+            --brown-light: #7a5444;
+            --brown-pale:  #c4a882;
+            --brown-muted: #9e7e6a;
+            --ink:         #2c1f14;
+            --ink-soft:    #6b5446;
+            --border:      #e8ddd0;
+            --shadow:      rgba(92,61,46,0.08);
+            --shadow-md:   rgba(92,61,46,0.14);
+            --success:     #4a7c59;
+            --danger:      #a33a2e;
+            --warning:     #b8860b;
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
-            background-color: var(--light-bg);
-            color: var(--dark-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            min-height: 100vh;
         }
 
-        /* Navbar Customization */
-        .navbar {
-            background-color: var(--white) !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+        /* ── Navbar ── */
+        .lib-nav {
+            background: var(--cream-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px var(--shadow);
         }
-        .navbar-brand {
-            color: var(--primary-color) !important;
+        .lib-nav .container {
+            display: flex;
+            align-items: center;
+            height: 62px;
+            gap: 8px;
+        }
+        .lib-brand {
+            font-family: 'Playfair Display', serif;
             font-weight: 700;
-            font-size: 1.5rem;
-            letter-spacing: 0.5px;
+            font-size: 1.25rem;
+            color: var(--brown) !important;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            margin-right: 8px;
         }
-        .nav-link {
-            color: var(--secondary-color) !important;
+        .lib-brand span {
+            display: inline-block;
+            width: 32px; height: 32px;
+            background: var(--brown);
+            border-radius: 8px;
+            margin-right: 8px;
+            position: relative;
+            vertical-align: middle;
+        }
+        .lib-brand span::after {
+            content: '✦';
+            color: var(--cream);
+            font-size: 14px;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+        }
+        .nav-links a {
+            font-size: 0.85rem;
             font-weight: 500;
-            margin: 0 5px;
-            padding: 8px 15px !important;
-            border-radius: var(--border-radius-sm);
-            transition: all 0.3s ease;
+            color: var(--ink-soft);
+            text-decoration: none;
+            padding: 6px 13px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
         }
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary-color) !important;
-            background-color: rgba(253, 126, 20, 0.1);
+        .nav-links a:hover {
+            background: var(--cream-dark);
+            color: var(--brown);
         }
-        .navbar-text {
-            color: var(--dark-color) !important;
-            font-weight: 600;
+        .nav-links a.active {
+            background: var(--brown);
+            color: var(--cream) !important;
+        }
+        .nav-links a .nav-icon { font-size: 13px; }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .nav-admin-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--ink-soft);
+        }
+        .nav-admin-label strong {
+            color: var(--ink);
         }
 
-        /* Buttons */
+        /* ── Buttons ── */
         .btn {
-             border-radius: var(--border-radius-sm);
-             font-weight: 500;
-             padding: 0.5rem 1.25rem;
-        }
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        .btn-primary:hover {
-            background-color: #e36d0a;
-            border-color: #e36d0a;
-        }
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            color: var(--white);
-        }
-        .btn-success {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
-        }
-
-        /* Cards */
-        .card {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 0.875rem;
             border: none;
-            border-radius: var(--border-radius-lg);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            cursor: pointer;
         }
-        .card-header {
-            background-color: var(--white);
-            border-bottom: 1px solid #eee;
+        .btn-brown {
+            background: var(--brown);
+            color: var(--cream);
+            padding: 8px 20px;
+        }
+        .btn-brown:hover { background: var(--brown-light); color: var(--cream); }
+
+        .btn-outline-brown {
+            background: transparent;
+            color: var(--brown);
+            border: 1.5px solid var(--brown);
+            padding: 6px 16px;
+        }
+        .btn-outline-brown:hover { background: var(--brown); color: var(--cream); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink-soft);
+            border: 1.5px solid var(--border);
+            padding: 6px 14px;
+            font-size: 0.8rem;
+        }
+        .btn-ghost:hover { border-color: var(--brown); color: var(--brown); }
+
+        .btn-danger-soft {
+            background: #fdf0ee;
+            color: var(--danger);
+            border: 1.5px solid #f5c4bc;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+        }
+        .btn-danger-soft:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+        .btn-success-soft {
+            background: #eef5f0;
+            color: var(--success);
+            border: 1.5px solid #b8d9c0;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+        }
+        .btn-success-soft:hover { background: var(--success); color: white; border-color: var(--success); }
+
+        .btn-warning-soft {
+            background: #fdf8e8;
+            color: var(--warning);
+            border: 1.5px solid #e8d48a;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+        }
+        .btn-warning-soft:hover { background: var(--warning); color: white; border-color: var(--warning); }
+
+        /* Override Bootstrap btn-primary/success/danger/warning to match theme */
+        .btn-primary { background: var(--brown) !important; border-color: var(--brown) !important; color: var(--cream) !important; }
+        .btn-primary:hover { background: var(--brown-light) !important; border-color: var(--brown-light) !important; }
+        .btn-outline-primary { color: var(--brown) !important; border-color: var(--brown) !important; background: transparent !important; }
+        .btn-outline-primary:hover { background: var(--brown) !important; color: var(--cream) !important; }
+        .btn-outline-success { color: var(--success) !important; border-color: var(--success) !important; }
+        .btn-outline-success:hover { background: var(--success) !important; color: white !important; }
+        .btn-outline-danger { color: var(--danger) !important; border-color: var(--danger) !important; }
+        .btn-success { background: var(--success) !important; border-color: var(--success) !important; }
+        .btn-danger  { background: var(--danger)  !important; border-color: var(--danger)  !important; }
+        .btn-warning { background: var(--warning) !important; border-color: var(--warning) !important; color: white !important; }
+        .btn-outline-danger:hover { background: var(--danger) !important; color: white !important; }
+
+        /* ── Page Header ── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 28px 0 24px;
+        }
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
             font-weight: 600;
-            color: var(--primary-color);
-            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0 !important;
+            color: var(--ink);
+            margin: 0;
         }
-        /* Override for login page which uses bg-primary */
-        .card-header.bg-primary {
-            background-color: var(--primary-color) !important;
-            color: var(--white) !important;
+        .page-header .header-icon {
+            width: 42px; height: 42px;
+            background: var(--cream-dark);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            border: 1px solid var(--border);
         }
 
-        /* Tables */
-        .table-responsive {
-            background-color: var(--white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            padding: 15px;
+        /* ── Cards ── */
+        .lib-card {
+            background: var(--cream-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 2px 12px var(--shadow);
             overflow: hidden;
         }
-        .table {
-            border-collapse: separate;
-            border-spacing: 0;
+        .lib-card .card-header {
+            background: var(--cream-dark);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--brown);
         }
-        .table thead th {
-            background-color: var(--dark-color);
-            color: var(--white);
+        .lib-card .card-body { padding: 20px; }
+
+        /* Bootstrap card override */
+        .card {
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 2px 12px var(--shadow) !important;
+            background: var(--cream-card) !important;
+        }
+        .card-header {
+            background: var(--cream-dark) !important;
+            border-bottom: 1px solid var(--border) !important;
+            font-weight: 600 !important;
+            color: var(--brown) !important;
+        }
+        .card-header.bg-primary {
+            background: var(--brown) !important;
+            color: var(--cream) !important;
+        }
+
+        /* ── Tables ── */
+        .lib-table-wrap {
+            background: var(--cream-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px var(--shadow);
+        }
+        .lib-table-wrap .table { margin: 0; }
+        .lib-table-wrap .table thead th {
+            background: var(--brown);
+            color: var(--cream);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             border: none;
-            font-weight: 500;
+            padding: 13px 16px;
         }
-        .table thead th:first-child { border-top-left-radius: var(--border-radius-sm); }
-        .table thead th:last-child { border-top-right-radius: var(--border-radius-sm); }
-        .table-hover tbody tr:hover {
-            background-color: rgba(253, 126, 20, 0.08);
+        .lib-table-wrap .table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
         }
-        
-        /* Typography */
-        h2 {
-            color: var(--dark-color);
-            font-weight: 300;
-            border-left: 5px solid var(--primary-color);
-            padding-left: 15px;
-            margin-bottom: 30px;
-            margin-top: 20px;
+        .lib-table-wrap .table tbody tr:last-child { border-bottom: none; }
+        .lib-table-wrap .table tbody tr:hover { background: var(--cream-dark); }
+        .lib-table-wrap .table tbody td {
+            padding: 13px 16px;
+            vertical-align: middle;
+            border: none;
+            color: var(--ink);
+            font-size: 0.875rem;
         }
-        
-        /* Forms */
+
+        /* Bootstrap table overrides */
+        .table-responsive {
+            background: var(--cream-card) !important;
+            border: 1px solid var(--border);
+            border-radius: 14px !important;
+            box-shadow: 0 2px 12px var(--shadow) !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+        }
+        .table-responsive .table { margin: 0; }
+        .table thead th, .table-dark th {
+            background: var(--brown) !important;
+            color: var(--cream) !important;
+            border: none !important;
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.4px !important;
+            text-transform: uppercase !important;
+            padding: 13px 16px !important;
+        }
+        .table tbody tr {
+            border-bottom: 1px solid var(--border) !important;
+            transition: background 0.15s;
+        }
+        .table tbody tr:last-child { border-bottom: none !important; }
+        .table-hover tbody tr:hover { background: var(--cream-dark) !important; }
+        .table tbody td {
+            border: none !important;
+            padding: 12px 16px !important;
+            vertical-align: middle !important;
+            font-size: 0.875rem;
+        }
+        .table-bordered td, .table-bordered th { border: none !important; }
+        .table-striped tbody tr:nth-of-type(odd) { background: rgba(242,237,228,0.4) !important; }
+
+        /* ── Forms & Inputs ── */
         .form-control, .form-select {
-            border-radius: var(--border-radius-sm);
-            border: 1px solid #e0e0e0;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            color: var(--ink);
+            padding: 9px 14px;
+            transition: all 0.2s;
         }
         .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(253, 126, 20, 0.25);
+            border-color: var(--brown-pale);
+            box-shadow: 0 0 0 3px rgba(92,61,46,0.1);
+            outline: none;
         }
-
-        /* Modals */
-        .modal-content {
-            border-radius: var(--border-radius-lg);
-            border: none;
-        }
-        .modal-header { border-bottom: 1px solid #eee; }
-        .modal-footer { border-top: 1px solid #eee; }
-
-        /* Badges */
-        .badge {
-            border-radius: 50rem;
-            padding: 0.4em 0.8em;
+        .form-control::placeholder { color: var(--brown-muted); opacity: 0.7; }
+        .form-label {
+            font-size: 0.8rem;
             font-weight: 600;
-            font-size: 0.8em;
+            color: var(--brown);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        /* Input group */
+        .input-group .form-control { border-radius: 8px 0 0 8px !important; }
+        .input-group .btn { border-radius: 0 8px 8px 0 !important; }
+
+        /* ── Badges ── */
+        .badge-borrowed {
+            background: #fef3e2;
+            color: #92600a;
+            border: 1px solid #f0d49a;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .badge-available {
+            background: #eef5f0;
+            color: var(--success);
+            border: 1px solid #b8d9c0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .badge-returned {
+            background: var(--cream-dark);
+            color: var(--ink-soft);
+            border: 1px solid var(--border);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        /* Override bootstrap badges */
+        .badge.bg-warning { background: #fef3e2 !important; color: #92600a !important; border: 1px solid #f0d49a; font-weight: 600; }
+        .badge.bg-success { background: #eef5f0 !important; color: var(--success) !important; border: 1px solid #b8d9c0; font-weight: 600; }
+        .badge.bg-secondary { background: var(--cream-dark) !important; color: var(--ink-soft) !important; border: 1px solid var(--border); font-weight: 600; }
+        .badge { border-radius: 20px !important; padding: 4px 10px !important; font-size: 0.75rem !important; }
+
+        /* ── Alerts ── */
+        .alert {
+            border-radius: 10px;
+            border: 1.5px solid;
+            font-size: 0.875rem;
+        }
+        .alert-danger  { background: #fdf0ee; border-color: #f5c4bc; color: #7a2820; }
+        .alert-success { background: #eef5f0; border-color: #b8d9c0; color: #2d5a3d; }
+        .alert-info    { background: #eef3fa; border-color: #b8cef0; color: #2d4a7a; }
+        .alert-warning { background: #fdf8e8; border-color: #e8d48a; color: #7a5a0a; }
+
+        /* ── Search bar ── */
+        .search-bar {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+        }
+        .search-bar .form-control {
+            border-radius: 8px 0 0 8px;
+            flex: 1;
+        }
+        .search-bar .btn {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* ── Modals ── */
+        .modal-content {
+            background: var(--cream-card) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 40px var(--shadow-md) !important;
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border) !important;
+            background: var(--cream-dark) !important;
+            border-radius: 16px 16px 0 0 !important;
+            padding: 16px 20px !important;
+        }
+        .modal-header .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--ink) !important;
+        }
+        .modal-footer {
+            border-top: 1px solid var(--border) !important;
+            background: var(--cream-dark) !important;
+            border-radius: 0 0 16px 16px !important;
+        }
+        .modal-body { padding: 20px !important; }
+
+        /* ── Divider ── */
+        hr { border-color: var(--border); opacity: 1; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--brown-pale); border-radius: 3px; }
+
+        /* ── Fine text ── */
+        .text-danger { color: var(--danger) !important; }
+        .text-success { color: var(--success) !important; }
+        .text-muted { color: var(--ink-soft) !important; }
+        .text-primary { color: var(--brown) !important; }
+
+        /* ── Logout button special ── */
+        .btn-logout {
+            font-size: 0.78rem;
+            padding: 5px 12px;
+            border-radius: 7px;
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--ink-soft);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+    <nav class="lib-nav">
         <div class="container">
-            <a class="navbar-brand" href="#">Librarian Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                {% if user.is_authenticated %}
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'manage_books' %}active{% endif %}" href="{% url 'manage_books' %}">📕 Books</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'active_borrows' %}active{% endif %}" href="{% url 'active_borrows' %}">📜 Transactions</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'borrow_process' %}active{% endif %}" href="{% url 'borrow_process' %}">🎒 Borrow</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'return_book' %}active{% endif %}" href="{% url 'return_book' %}">📓 Return</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}" href="{% url 'manage_users' %}">👨🏻‍🏫 Users</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'settings_view' %}active{% endif %}" href="{% url 'settings_view' %}">⚙️ Settings</a></li>
-                </ul>
-                <span class="navbar-text">
-                    Admin: {{ user.username }}
-                </span>
-                <form action="{% url 'logout' %}" method="post" class="d-inline ms-3">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
-                </form>
-                {% endif %}
+            <a class="lib-brand" href="#">
+                <span></span>Library Admin
+            </a>
+
+            {% if user.is_authenticated %}
+            <div class="nav-links">
+                <a class="{% if request.resolver_match.url_name == 'manage_books' %}active{% endif %}" href="{% url 'manage_books' %}">
+                    <span class="nav-icon">📕</span> Books
+                </a>
+                <a class="{% if request.resolver_match.url_name == 'active_borrows' %}active{% endif %}" href="{% url 'active_borrows' %}">
+                    <span class="nav-icon">📜</span> Transactions
+                </a>
+                <a class="{% if request.resolver_match.url_name == 'borrow_process' %}active{% endif %}" href="{% url 'borrow_process' %}">
+                    <span class="nav-icon">🎒</span> Borrow
+                </a>
+                <a class="{% if request.resolver_match.url_name == 'return_book' %}active{% endif %}" href="{% url 'return_book' %}">
+                    <span class="nav-icon">📓</span> Return
+                </a>
+                <a class="{% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}" href="{% url 'manage_users' %}">
+                    <span class="nav-icon">👨‍🏫</span> Users
+                </a>
+                <a class="{% if request.resolver_match.url_name == 'settings_view' %}active{% endif %}" href="{% url 'settings_view' %}">
+                    <span class="nav-icon">⚙️</span> Settings
+                </a>
             </div>
+
+            <div class="nav-right">
+                <span class="nav-admin-label">Admin: <strong>{{ user.username }}</strong></span>
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-logout">Logout</button>
+                </form>
+            </div>
+            {% endif %}
         </div>
     </nav>
 

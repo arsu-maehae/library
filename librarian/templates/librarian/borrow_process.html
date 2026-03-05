@@ -1,41 +1,43 @@
 {% extends 'librarian/base.html' %}
 
 {% block content %}
-<h2>🎒 Borrow Process</h2>
+
+<div class="page-header">
+    <div class="header-icon">🎒</div>
+    <h1>Borrow Process</h1>
+</div>
 
 {% if error %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <strong>Error!</strong> {{ error }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="alert alert-danger mb-4">
+    <strong>Error:</strong> {{ error }}
 </div>
 {% endif %}
 {% if success %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
+<div class="alert alert-success mb-4">
     <strong>Success!</strong> {{ success }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 {% endif %}
 
-<div class="card mb-4 mt-3">
-    <div class="card-header bg-light">
-        <strong>Manual Borrow Entry</strong>
+<div style="background:var(--cream-card);border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px var(--shadow);overflow:hidden;">
+    <div style="background:var(--cream-dark);border-bottom:1px solid var(--border);padding:14px 22px;">
+        <span style="font-weight:600;font-size:0.875rem;color:var(--brown);">Manual Borrow Entry</span>
     </div>
-    <div class="card-body">
+    <div style="padding:24px;">
         <form method="post" class="row g-3">
             {% csrf_token %}
             <div class="col-md-4">
                 <label class="form-label">Member SSID</label>
-                <input type="text" name="ssid" class="form-control" required placeholder="Enter SSID">
+                <input type="text" name="ssid" class="form-control" required placeholder="Enter SSID" style="height:44px;">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Book ID</label>
-                <input type="text" name="book_id" class="form-control" required placeholder="Enter Book ID">
+                <input type="text" name="book_id" class="form-control" required placeholder="Enter Book ID" style="height:44px;">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Duration</label>
                 <div class="input-group">
-                    <input type="number" name="duration" class="form-control" value="7" min="1">
-                    <select name="unit" class="form-select">
+                    <input type="number" name="duration" class="form-control" value="7" min="1" style="height:44px;">
+                    <select name="unit" class="form-select" style="height:44px;">
                         <option value="days" selected>Days</option>
                         <option value="months">Months</option>
                         <option value="years">Years</option>
@@ -43,9 +45,10 @@
                 </div>
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-success w-100">Confirm</button>
+                <button type="submit" class="btn btn-brown w-100" style="height:44px;">Confirm</button>
             </div>
         </form>
     </div>
 </div>
+
 {% endblock %}

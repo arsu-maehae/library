@@ -1,126 +1,203 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Return to the Archive — Login</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Library — Student Sign In</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --cream:       #faf7f2;
+            --cream-card:  #fffef9;
+            --brown:       #5c3d2e;
+            --brown-light: #7a5444;
+            --brown-pale:  #c4a882;
+            --brown-muted: #9e7e6a;
+            --ink:         #2c1f14;
+            --ink-soft:    #6b5446;
+            --border:      #e8ddd0;
+            --shadow:      rgba(92,61,46,0.08);
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--ink);
+            background-color: var(--cream);
+        }
 
-		<script src="https://cdn.tailwindcss.com"></script>
-		<script>
-			tailwind.config = {
-				theme: {
-					extend: {
-						colors: {
-							parchment: '#FDF5E6',
-							forest: '#2F4F4F',
-							midnight: '#2C3E50',
-							mahogany: '#4B2E2A'
-						},
-						fontFamily: {
-							serif: ['Playfair Display', 'serif'],
-							sans: ['Inter', 'ui-sans-serif', 'system-ui']
-						}
-					}
-				}
-			}
-		</script>
+        /* 🌟 โครงสร้างหลัก: แบ่งหน้าจอซ้าย-ขวา */
+        .split-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-		<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-		<style>
-			:root{--parchment:#FDF5E6;--forest:#2F4F4F;--midnight:#2C3E50;--mahogany:#4B2E2A}
-			body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:var(--parchment)}
-			.serif{font-family:'Playfair Display', serif;color:var(--parchment)}
-			/* richer library background (mahogany shelves, warm tones) */
-			.bg-library{background-image:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=');background-size:cover;background-position:center}
+        /* 📸 ฝั่งซ้าย: รูปภาพบรรยากาศห้องสมุด */
+        .split-image {
+            flex: 1; /* กินพื้นที่ครึ่งจอ (50%) */
+            /* ดึงรูปภาพตัวอย่างฟรีจาก Unsplash มาใช้ (คุณเปลี่ยนลิงก์ภาพมหาลัยได้เลยครับ) */
+            background-image: url('https://i.pinimg.com/1200x/78/49/ac/7849acf43fa5cdc4152758562f2f3dbe.jpg'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        /* ใส่ฟิลเตอร์สีน้ำตาลทับรูปภาพนิดๆ ให้ดูคลาสสิกและเข้ากับ Vibe ของเว็บ */
+        .split-image::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(92, 61, 46, 0.2), rgba(92, 61, 46, 0.7));
+        }
 
-			/* glass / parchment card */
-			.glass {
-				background: linear-gradient(180deg, rgba(253,245,230,0.85) 0%, rgba(255,255,255,0.55) 100%);
-				backdrop-filter: blur(6px) saturate(120%);
-				-webkit-backdrop-filter: blur(6px) saturate(120%);
-				border: 1px solid rgba(255,255,255,0.12);
-				box-shadow: 0 10px 40px rgba(17,24,39,0.5);
-			}
+        /* 📝 ฝั่งขวา: พื้นที่สำหรับฟอร์มล็อกอิน */
+        .split-form-area {
+            flex: 1; /* กินพื้นที่ครึ่งจอ (50%) */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: var(--cream);
+        }
 
-			/* subtle paper grain overlay */
-			.grain:after{
-				content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(transparent 30%, rgba(0,0,0,0.02) 100%), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.03"/></svg>');mix-blend-mode:multiply;opacity:0.9}
+		/* ล็อกขนาดกล่องฟอร์มให้พอดี ไม่กว้างเกินไป */
+        .login-wrapper {
+            width: 100%;
+            max-width: 540px; /* 👈 570px อาจจะกว้างไปนิดบนจอคอม ปรับมา 540px กำลังสวยครับ */
+        }
 
-			.focus-forest:focus{border-color:var(--forest);box-shadow:0 0 0 3px rgba(47,79,79,0.08)}
+        /* รวม .card-parchment ที่ซ้ำกันให้เหลืออันเดียว */
+        .card-parchment {
+            background: var(--cream-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px var(--shadow);
+            padding: 48px; /* 👈 ดันพื้นที่ด้านในให้กล่องดูอ้วนสมส่วน */
+        }
 
-			.quill {width:96px;height:96px;border-radius:14px;background:rgba(75,46,42,0.12);display:flex;align-items:center;justify-content:center}
+        /* 🏷️ ขยายขนาดคำว่า Student ID ด้านบนให้สมมาตรกับกล่อง */
+        .form-label {
+            font-weight: 600;
+            color: var(--brown);
+            font-size: 1.15rem; /* 👈 ขยาย Label ให้ใหญ่ขึ้น */
+            margin-bottom: 10px;
+            display: block;
+        }
 
-			/* make card size symmetric and centered — enlarged for readability */
-			main.relative{display:flex;align-items:center;justify-content:center;padding-left:1rem;padding-right:1rem;min-height:70vh}
-			/* allow a much wider card on large screens */
-			section.glass{max-width:1200px;width:100%;margin:0 auto;padding:4.5rem}
-			@media (max-width:1280px){
-				section.glass{max-width:1000px;padding:3.5rem}
-			}
-			@media (max-width:1024px){
-				section.glass{max-width:820px;padding:2.75rem}
-			}
-			@media (max-width:640px){
-				section.glass{padding:2rem}
-			}
+        /* 🔤 ปรับช่องกรอกและขยายอักษรข้างใน */
+        .form-control {
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            padding: 12px 20px; /* เพิ่มระยะซ้าย-ขวา ให้ตัวอักษรไม่ชิดขอบ */
+            background-color: #ffffff;
+            height: 60px; /* 👈 ลดจาก 70px มาเป็น 60px (70px ใหญ่เทอะทะไปสำหรับเว็บครับ) */
+            font-size: 1.15rem; /* 👈 🌟 หัวใจสำคัญ! ขยายฟอนต์ข้างในให้รับกับความสูงกล่อง */
+        }
+        
+        .form-control:focus {
+            border-color: var(--brown-pale);
+            box-shadow: 0 0 0 4px rgba(92,61,46,0.06);
+            outline: none;
+        }
+        
+        /* 🔘 ปรับปุ่มให้สูงเท่ากับช่องกรอกพอดี */
+        .btn-brown {
+            background: var(--brown);
+            color: var(--cream);
+            border-radius: 8px;
+            border: none;
+            transition: 0.2s ease-in-out;
+            height: 60px; /* 👈 ปรับให้สูง 60px เท่ากับ .form-control เป๊ะๆ */
+            font-size: 1.25rem; /* 👈 ขยายตัวอักษรปุ่มให้เด่นชัด */
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 15px; /* ดันปุ่มให้ห่างจากช่องกรอกลงมานิดนึง */
+        }
+        
+        .btn-brown:hover {
+            background: #4a3125;
+            color: #fff;
+        }
 
-			/* ensure inputs and button line up and have consistent radius */
-			input[type="text"], input[type="password"]{border-radius:10px}
-			button[type="submit"]{border-radius:10px;padding-top:0.9rem;padding-bottom:0.9rem}
-		</style>
-	</head>
-		<body class="min-h-screen flex items-start justify-center pt-8 pb-12 px-6" style="background:#fbf7f0">
+        .card-parchment {
+            background: var(--cream-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px var(--shadow);
+            padding: 32px;
+        }
 
-			<main class="relative w-full max-w-screen-xl mx-auto">
-				<section class="glass relative rounded-3xl p-8 md:p-10" style="max-width:980px;margin:0 auto;padding:3.5rem;background:linear-gradient(180deg,#fffaf0,#fff6ec);box-shadow:0 8px 24px rgba(23,18,12,0.06);border-radius:12px;border:1px solid rgba(0,0,0,0.02);min-height:420px">
-					<div class="flex items-center gap-4">
-						<div class="quill" style="width:64px;height:64px;border-radius:8px">
-							<!-- quill icon -->
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10" fill="none">
-								<path d="M3 21s6-6 11-11c2-2 3-4 3-4s-2 1-4 3C11 8 5 14 3 21z" stroke="#4B2E2A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-								<path d="M14 7c2 2 4 3 6 3" stroke="#4B2E2A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-							</svg>
-						</div>
+        /* 📱 Responsive: ถ้าเปิดบนมือถือหรือจอเล็ก ให้ซ่อนรูปภาพฝั่งซ้ายทิ้งไปเลย เพื่อไม่ให้เกะกะ */
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+            }
+            .split-image {
+                display: none; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        
+        <div class="split-image"></div>
 
-												<div>
-													<h1 class="serif" style="font-size:1.6rem;color:#4b2e2a;margin:0">Library</h1>
-													<p style="margin-top:6px;color:#6c757d">A quiet reading room — sign in to continue.</p>
-												</div>
-					</div>
+        <div class="split-form-area">
+            <div class="login-wrapper">
+                
+				<div class="text-center" style="margin-bottom: 40px;"> <div style="width:72px;height:72px;background:var(--brown-pale);border-radius:18px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:45px;color:var(--ink);">
+                        📖
+                    </div>
+                    
+                    <h1 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--ink);margin:0;">
+                        Student Library
+                    </h1>
+                    
+                    <p style="color:var(--ink-soft);font-size:1.15rem;margin:10px 0 0;">
+                        A quiet reading room — sign in to continue.
+                    </p>
+                </div>
 
-					<div class="mt-6">
-						{% if messages %}
-							{% for message in messages %}
-								<div class="mb-3 rounded-md px-3 py-2 text-sm bg-red-800/20 text-red-100">{{ message }}</div>
-							{% endfor %}
-						{% endif %}
+                <div class="card-parchment">
+                    {% if form.errors %}
+                    <div class="alert alert-danger mb-4" style="font-size: 0.9rem; border-radius: 8px;">
+                        <strong>Sign in failed.</strong> Please check your Student ID.
+                    </div>
+                    {% endif %}
 
-						<form method="post" class="mt-5" novalidate>
-							{% csrf_token %}
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_student_id" class="form-label" style="font-weight:600;color:var(--brown);">Student ID</label>
+                            <input id="id_student_id" name="student_id" type="text" 
+                                   class="form-control" 
+                                   value="{{ form.student_id.value|default:'' }}" 
+                                   placeholder="Enter your student ID" 
+                                   required autofocus>
+                            {% if form.student_id.errors %}
+                                <div class="text-danger mt-2" style="font-size: 0.85rem;">{{ form.student_id.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-							{% if form.non_field_errors %}
-								<div class="text-sm text-red-200 bg-red-900/20 p-2 rounded">{{ form.non_field_errors }}</div>
-							{% endif %}
+                        <button type="submit" class="btn btn-brown w-100">
+                            Enter Reading Room →
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p style="font-size: 0.8rem; color: var(--brown-muted);">
+                        King Mongkut's University of Technology North Bangkok
+                    </p>
+                </div>
 
-							<div>
-								<label for="id_student_id" class="block mb-2" style="color:#6c4a3a;font-weight:600">Student ID</label>
-								<input id="id_student_id" name="student_id" type="text" autocomplete="username" required
-									class="w-full rounded-lg py-3 px-4" style="background:#fff;border:1px solid rgba(0,0,0,0.04);font-size:1rem;color:#222"
-									value="{{ form.student_id.value|default:'' }}">
-								{% if form.student_id.errors %}
-									<p class="mt-2" style="color:#b85a5a;font-size:0.95rem">{{ form.student_id.errors.0 }}</p>
-								{% endif %}
-							</div>
-							<div style="margin-top:14px">
-							  <button type="submit" class="w-full rounded-lg" style="background:#6c4a3a;color:#fff;padding:12px 14px;font-weight:600">Continue</button>
-							</div>
-						</form>
-					</div>
-				</section>
-
-				<p class="text-center text-xs text-parchment/70 mt-4">&copy; Library Sanctuary</p>
-			</main>
-
-		</body>
-	</html>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

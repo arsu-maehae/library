@@ -1,77 +1,88 @@
 {% extends 'librarian/base.html' %}
 
 {% block content %}
-<h2>⚙️ Settings</h2>
-<div class="row">
-    <!-- Left Column: Admin Profile -->
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center d-flex flex-column align-items-center">
-                <div class="mb-3 mt-3">
-                    <!-- Generate Avatar from Username -->
-                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=fd7e14&color=fff&size=128&bold=true" 
-                         class="rounded-circle shadow-sm" 
-                         alt="Admin Profile" 
-                         style="width: 128px; height: 128px; object-fit: cover;">
+
+<div class="page-header">
+    <div class="header-icon">⚙️</div>
+    <h1>Settings</h1>
+</div>
+
+<div class="row g-4">
+
+    <!-- Left: Profile Card -->
+    <div class="col-md-4">
+        <div style="background:var(--cream-card);border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px var(--shadow);overflow:hidden;">
+
+            <!-- Avatar header strip -->
+            <div style="background:var(--brown);padding:28px 20px 56px;position:relative;">
+                <div style="position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);">
+                    <div style="width:72px;height:72px;background:var(--cream-dark);border-radius:50%;border:3px solid var(--cream-card);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--brown);box-shadow:0 2px 12px var(--shadow-md);">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
                 </div>
-                <h4 class="card-title mb-1">{{ user.username }}</h4>
-                <p class="text-muted mb-4">Administrator</p>
-                
-                <div class="w-100 text-start px-3">
-                    <hr>
+            </div>
+
+            <div style="padding:52px 24px 28px;text-align:center;">
+                <h4 style="font-family:'Playfair Display',serif;font-size:1.15rem;margin:0 0 2px;">{{ user.username }}</h4>
+                <p style="color:var(--ink-soft);font-size:0.8rem;margin:0 0 20px;">Administrator</p>
+
+                <div style="border-top:1px solid var(--border);padding-top:18px;text-align:left;">
                     <div class="mb-3">
-                        <small class="text-muted d-block">Email</small>
-                        <span class="fw-medium">{{ user.email|default:"-" }}</span>
+                        <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--brown-muted);margin-bottom:3px;">Email</div>
+                        <div style="font-size:0.875rem;color:var(--ink);">{{ user.email|default:"—" }}</div>
                     </div>
                     <div class="mb-3">
-                        <small class="text-muted d-block">Date Joined</small>
-                        <span class="fw-medium">{{ user.date_joined|date:"d M Y" }}</span>
+                        <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--brown-muted);margin-bottom:3px;">Date Joined</div>
+                        <div style="font-size:0.875rem;color:var(--ink);">{{ user.date_joined|date:"d M Y" }}</div>
                     </div>
-                    <div class="mb-3">
-                        <small class="text-muted d-block">Last Login</small>
-                        <span class="fw-medium">{{ user.last_login|date:"d M Y H:i" }}</span>
+                    <div>
+                        <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--brown-muted);margin-bottom:3px;">Last Login</div>
+                        <div style="font-size:0.875rem;color:var(--ink);">{{ user.last_login|date:"d M Y H:i" }}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Change Password -->
-    <div class="col-md-8 mb-4">
-        <div class="card h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0 text-primary">Change Password</h5>
+    <!-- Right: Change Password -->
+    <div class="col-md-8">
+        <div style="background:var(--cream-card);border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px var(--shadow);overflow:hidden;height:100%;">
+            <div style="background:var(--cream-dark);border-bottom:1px solid var(--border);padding:14px 22px;">
+                <span style="font-weight:600;font-size:0.875rem;color:var(--brown);">Change Password</span>
             </div>
-            <div class="card-body">
+            <div style="padding:24px;">
                 <form method="post">
                     {% csrf_token %}
                     {% for field in form %}
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label">{{ field.label }}</label>
                         {{ field }}
                         {% if field.help_text %}
-                        <div class="form-text text-muted small">{{ field.help_text }}</div>
+                        <div style="font-size:0.775rem;color:var(--ink-soft);margin-top:6px;line-height:1.5;">{{ field.help_text }}</div>
                         {% endif %}
                         {% for error in field.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
+                        <div style="font-size:0.8rem;color:var(--danger);margin-top:5px;">{{ error }}</div>
                         {% endfor %}
                     </div>
                     {% endfor %}
-                    <div class="mt-4 text-end">
-                        <button type="submit" class="btn btn-primary px-4">Update Password</button>
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-brown" style="padding:10px 28px;">
+                            Update Password
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
-    // Add Bootstrap classes to Django form fields automatically
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll('input[type="password"]').forEach(input => {
             input.classList.add('form-control');
         });
     });
 </script>
+
 {% endblock %}

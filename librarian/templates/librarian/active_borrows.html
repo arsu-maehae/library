@@ -1,17 +1,24 @@
 {% extends 'librarian/base.html' %}
 
 {% block content %}
-<h2>📜 Transactions Dashboard</h2>
-<form class="mb-4 mt-3" method="get">
-    <div class="input-group">
-        <input type="text" name="ssid" class="form-control" placeholder="Search by Borrower SSID..." value="{{ request.GET.ssid }}">
-        <button class="btn btn-primary" type="submit">Search</button>
-    </div>
+
+<div class="page-header">
+    <div class="header-icon">📜</div>
+    <h1>Transactions Dashboard</h1>
+</div>
+
+<!-- Search -->
+<form class="search-bar mb-4" method="get">
+    <input type="text" name="ssid" class="form-control"
+           placeholder="Search by Borrower SSID..."
+           value="{{ request.GET.ssid }}">
+    <button class="btn btn-brown" type="submit">Search</button>
 </form>
 
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead class="table-light">
+<!-- Table -->
+<div class="lib-table-wrap">
+    <table class="table">
+        <thead>
             <tr>
                 <th>Book ID</th>
                 <th>Book Name</th>
@@ -26,19 +33,30 @@
         <tbody>
             {% for record in records %}
             <tr>
-                <td>{{ record.book.id }}</td>
-                <td>{{ record.book.name }}</td>
-                <td>{{ record.book.author }}</td>
-                <td>{{ record.member.ssid }}</td>
-                <td>{{ record.start_date }}</td>
-                <td>{{ record.due_date }}</td>
-                <td class="text-danger fw-bold">{{ record.fine }}</td>
+                <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ record.book.id }}</td>
+                <td style="font-weight:500;">{{ record.book.name }}</td>
+                <td style="color:var(--ink-soft);">{{ record.book.author }}</td>
+                <td style="color:var(--ink-soft);">{{ record.member.ssid }}</td>
+                <td style="color:var(--ink-soft);">{{ record.start_date }}</td>
+                <td style="color:var(--ink-soft);">{{ record.due_date }}</td>
+                <td style="color:var(--danger);font-weight:600;">{{ record.fine }}</td>
                 <td>
-                    <form method="post">{% csrf_token %}<input type="hidden" name="record_id" value="{{ record.id }}"><button type="submit" class="btn btn-success btn-sm">Return</button></form>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="record_id" value="{{ record.id }}">
+                        <button type="submit" class="btn btn-success-soft">Return</button>
+                    </form>
                 </td>
             </tr>
-            {% empty %}<tr><td colspan="8" class="text-center">No active borrows found.</td></tr>{% endfor %}
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center" style="color:var(--ink-soft);padding:40px!important;">
+                    No active borrows found.
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
+
 {% endblock %}

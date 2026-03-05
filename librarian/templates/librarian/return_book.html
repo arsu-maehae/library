@@ -1,23 +1,28 @@
 {% extends 'librarian/base.html' %}
 
 {% block content %}
-<h2>📓 Return Book </h2>
 
-<form class="mb-4 mt-3" method="get">
-    <div class="input-group">
-        <input type="text" name="ssid" class="form-control" placeholder="Enter Member SSID to search..." value="{{ ssid }}" required>
-        <button class="btn btn-primary" type="submit">Search</button>
-    </div>
+<div class="page-header">
+    <div class="header-icon">📓</div>
+    <h1>Return Book</h1>
+</div>
+
+<form class="search-bar mb-4" method="get">
+    <input type="text" name="ssid" class="form-control"
+           placeholder="Enter Member SSID to search..."
+           value="{{ ssid }}" required>
+    <button class="btn btn-brown" type="submit">Search</button>
 </form>
 
 {% if member %}
-    <div class="alert alert-info">
-        <strong>Member:</strong> {{ member.name }} ({{ member.ssid }})
+    <div class="alert alert-info mb-4">
+        <strong>Member:</strong> {{ member.name }} &nbsp;·&nbsp;
+        <span style="color:var(--ink-soft);">SSID: {{ member.ssid }}</span>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
+    <div class="lib-table-wrap">
+        <table class="table">
+            <thead>
                 <tr>
                     <th>Book ID</th>
                     <th>Book Name</th>
@@ -30,25 +35,41 @@
             <tbody>
                 {% for record in records %}
                 <tr>
-                    <td>{{ record.book.id }}</td>
-                    <td>{{ record.book.name }}</td>
-                    <td>{{ record.start_date }}</td>
-                    <td>{{ record.due_date }}</td>
-                    <td>{% if record.return_date %}{{ record.return_date }}{% else %}-{% endif %}</td>
+                    <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ record.book.id }}</td>
+                    <td style="font-weight:500;">{{ record.book.name }}</td>
+                    <td style="color:var(--ink-soft);">{{ record.start_date }}</td>
+                    <td style="color:var(--ink-soft);">{{ record.due_date }}</td>
+                    <td style="color:var(--ink-soft);">{% if record.return_date %}{{ record.return_date }}{% else %}—{% endif %}</td>
                     <td>
                         {% if record.return_date %}
-                            <span class="badge bg-secondary">Returned</span>
+                            <span class="badge-returned">Returned</span>
                         {% else %}
-                            <span class="badge bg-warning text-dark">Active</span>
-                            <form method="post" class="d-inline ms-2">{% csrf_token %}<input type="hidden" name="record_id" value="{{ record.id }}"><button type="submit" class="btn btn-success btn-sm">Return</button></form>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge-borrowed">Active</span>
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="record_id" value="{{ record.id }}">
+                                    <button type="submit" class="btn btn-success-soft">Return</button>
+                                </form>
+                            </div>
                         {% endif %}
                     </td>
                 </tr>
-                {% empty %}<tr><td colspan="6" class="text-center">No history found for this user.</td></tr>{% endfor %}
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center" style="color:var(--ink-soft);padding:40px!important;">
+                        No history found for this member.
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
+
 {% elif ssid %}
-    <div class="alert alert-warning">Member with SSID "{{ ssid }}" not found.</div>
+    <div class="alert alert-warning">
+        Member with SSID "<strong>{{ ssid }}</strong>" not found.
+    </div>
 {% endif %}
+
 {% endblock %}

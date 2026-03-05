@@ -1,0 +1,56 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Borrowing History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+      /* Compact, rational history layout */
+      body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:#fbf7f0;padding:12px}
+      .container-min{max-width:720px;margin:40px auto;background:linear-gradient(180deg,#fffaf0, #fff6ec);border-radius:8px;padding:12px 14px;box-shadow:0 6px 18px rgba(23,18,12,0.06);border:1px solid rgba(0,0,0,0.02)}
+      .muted{color:#6b7280}
+      .list-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+      .small-meta{font-size:0.9rem;color:#6c757d}
+      h4{font-family:'Playfair Display', serif;color:#4b2e2a;margin:0}
+    </style>
+  </head>
+  <body>
+    <div class="container-min">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <h4 class="mb-0">Borrowing History</h4>
+            <div class="small-meta">All records for this member</div>
+          </div>
+          <div>
+            <a href="{% url 'member:profile' %}" class="btn btn-sm btn-outline-secondary me-2">Profile</a>
+            <a href="{% url 'member:logout' %}" class="btn btn-sm btn-outline-secondary">Logout</a>
+          </div>
+        </div>
+        <hr>
+        {% if student_id and not member %}
+          <div class="alert alert-warning">Member with SSID "{{ student_id }}" not found.</div>
+        {% else %}
+          {% if history and history|length > 0 %}
+            {% for record in history %}
+            <div class="list-item">
+              <div>
+                <div style="font-weight:600">{{ record.book.name }}</div>
+                <div class="small-meta">by {{ record.book.author }} • Borrowed: {{ record.start_date }}</div>
+              </div>
+              <div class="text-end small-meta">
+                <div>Due: {{ record.due_date }}</div>
+                <div>Returned: {% if record.return_date %}{{ record.return_date }}{% else %}-{% endif %}</div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted">No borrowing history found for this member.</p>
+          {% endif %}
+        {% endif %}
+      </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

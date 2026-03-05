@@ -29,15 +29,26 @@ def manage_books(request):
             if category_name:
                 category, _ = Category.objects.get_or_create(name=category_name)
 
-            book_data = {
-                'isbn': request.POST.get('isbn'),
-                'name': request.POST.get('name'),
-                'author': request.POST.get('author'),
-                'category': category
-            }
-            if request.POST.get('book_id'):
-                book_data['id'] = request.POST.get('book_id')
-            Book.objects.create(**book_data)
+            isbn = request.POST.get('isbn')
+            name = request.POST.get('name')
+            author = request.POST.get('author')
+            book_id = request.POST.get('book_id')
+
+            # If a book_id was provided and a Book with that id exists, update it.
+            # Otherwise create a new Book. Do NOT pass an explicit primary key
+            # into create() as that can violate UNIQUE constraints.
+            if book_id and book_id.isdigit():
+                existing = Book.objects.filter(id=book_id).first()
+                if existing:
+                    existing.isbn = isbn
+                    existing.name = name
+                    existing.author = author
+                    existing.category = category
+                    existing.save()
+                else:
+                    Book.objects.create(isbn=isbn, name=name, author=author, category=category)
+            else:
+                Book.objects.create(isbn=isbn, name=name, author=author, category=category)
         elif action == 'edit':
             book = get_object_or_404(Book, id=request.POST.get('book_id'))
             

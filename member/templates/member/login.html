@@ -52,13 +52,14 @@
 			.quill {width:96px;height:96px;border-radius:14px;background:rgba(75,46,42,0.12);display:flex;align-items:center;justify-content:center}
 
 			/* make card size symmetric and centered — enlarged for readability */
-			main.relative{display:flex;align-items:center;justify-content:center;padding-left:1rem;padding-right:1rem}
-			section.glass{max-width:980px;margin:0 auto;padding:4rem}
+			main.relative{display:flex;align-items:center;justify-content:center;padding-left:1rem;padding-right:1rem;min-height:70vh}
+			/* allow a much wider card on large screens */
+			section.glass{max-width:1200px;width:100%;margin:0 auto;padding:4.5rem}
 			@media (max-width:1280px){
-				section.glass{max-width:880px;padding:3.5rem}
+				section.glass{max-width:1000px;padding:3.5rem}
 			}
 			@media (max-width:1024px){
-				section.glass{max-width:760px;padding:2.75rem}
+				section.glass{max-width:820px;padding:2.75rem}
 			}
 			@media (max-width:640px){
 				section.glass{padding:2rem}
@@ -69,14 +70,12 @@
 			button[type="submit"]{border-radius:10px;padding-top:0.9rem;padding-bottom:0.9rem}
 		</style>
 	</head>
-		<body class="min-h-screen bg-library bg-fixed flex items-center justify-center py-16 px-6">
+		<body class="min-h-screen flex items-start justify-center pt-8 pb-12 px-6" style="background:#fbf7f0">
 
-			<div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/50"></div>
-
-			<main class="relative w-full max-w-lg mx-auto grain">
-				<section class="glass relative rounded-3xl p-8 md:p-10">
-					<div class="flex flex-col items-center gap-4">
-						<div class="quill">
+			<main class="relative w-full max-w-screen-xl mx-auto">
+				<section class="glass relative rounded-3xl p-8 md:p-10" style="max-width:980px;margin:0 auto;padding:3.5rem;background:linear-gradient(180deg,#fffaf0,#fff6ec);box-shadow:0 8px 24px rgba(23,18,12,0.06);border-radius:12px;border:1px solid rgba(0,0,0,0.02);min-height:420px">
+					<div class="flex items-center gap-4">
+						<div class="quill" style="width:64px;height:64px;border-radius:8px">
 							<!-- quill icon -->
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10" fill="none">
 								<path d="M3 21s6-6 11-11c2-2 3-4 3-4s-2 1-4 3C11 8 5 14 3 21z" stroke="#4B2E2A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -84,8 +83,10 @@
 							</svg>
 						</div>
 
-						<h1 class="serif text-5xl md:text-6xl">Library</h1>
-						<p class="text-lg md:text-base text-parchment/90">A quiet reading room — sign in to continue.</p>
+												<div>
+													<h1 class="serif" style="font-size:1.6rem;color:#4b2e2a;margin:0">Library</h1>
+													<p style="margin-top:6px;color:#6c757d">A quiet reading room — sign in to continue.</p>
+												</div>
 					</div>
 
 					<div class="mt-6">
@@ -95,7 +96,7 @@
 							{% endfor %}
 						{% endif %}
 
-						<form method="post" class="mt-5 space-y-4" novalidate>
+						<form method="post" class="mt-5" novalidate>
 							{% csrf_token %}
 
 							{% if form.non_field_errors %}
@@ -103,15 +104,17 @@
 							{% endif %}
 
 							<div>
-								<label for="id_student_id" class="block text-lg mb-3 text-mahogany/90">Student ID</label>
+								<label for="id_student_id" class="block mb-2" style="color:#6c4a3a;font-weight:600">Student ID</label>
 								<input id="id_student_id" name="student_id" type="text" autocomplete="username" required
-									class="w-full rounded-lg bg-parchment/60 py-5 px-5 text-midnight placeholder-midnight/60 border border-transparent focus:outline-none focus:ring-0 focus:border-forest transition focus-forest text-lg"
+									class="w-full rounded-lg py-3 px-4" style="background:#fff;border:1px solid rgba(0,0,0,0.04);font-size:1rem;color:#222"
 									value="{{ form.student_id.value|default:'' }}">
 								{% if form.student_id.errors %}
-									<p class="mt-1 text-xs text-red-200">{{ form.student_id.errors.0 }}</p>
+									<p class="mt-2" style="color:#b85a5a;font-size:0.95rem">{{ form.student_id.errors.0 }}</p>
 								{% endif %}
 							</div>
-							<button type="submit" class="w-full rounded-lg bg-forest text-parchment font-semibold hover:brightness-110 transition text-lg py-4">Continue</button>
+							<div style="margin-top:14px">
+							  <button type="submit" class="w-full rounded-lg" style="background:#6c4a3a;color:#fff;padding:12px 14px;font-weight:600">Continue</button>
+							</div>
 						</form>
 					</div>
 				</section>

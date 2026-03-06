@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv 
+import os                        
+
+load_dotenv()   
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,12 +78,32 @@ WSGI_APPLICATION = 'library.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+ACTIVE_DB = os.getenv('ACTIVE_DB', 'postgresql')
+
+if ACTIVE_DB == 'oracle':
+    DEFAULT_DB = {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': os.getenv('ORA_NAME'),
+        'USER': os.getenv('ORA_USER'),
+        'PASSWORD': os.getenv('ORA_PASSWORD'),
+        'HOST': os.getenv('ORA_HOST', 'localhost'),
+        'PORT': os.getenv('ORA_PORT', '1521'),
     }
+else:
+    DEFAULT_DB = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('PG_NAME'),
+        'USER': os.getenv('PG_USER'),
+        'PASSWORD': os.getenv('PG_PASSWORD'),
+        'HOST': os.getenv('PG_HOST', 'localhost'),
+        'PORT': os.getenv('PG_PORT', '5432'),
+    }
+
+DATABASES = {
+    'default': DEFAULT_DB
 }
+
 
 
 # Password validation

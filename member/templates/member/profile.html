@@ -4,69 +4,260 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Profile</title>
+    <title>Library — Student Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-      /* Compact, readable layout */
-      body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:#fbf7f0;padding:20px;font-size:17px;line-height:1.5;color:#2b2b2b}
-      .container-min{width:calc(100% - 80px);max-width:1200px;margin:22px auto;background:linear-gradient(180deg,#fffaf0,#fff6ec);border-radius:8px;padding:22px 26px;box-shadow:0 8px 24px rgba(23,18,12,0.06);border:1px solid rgba(0,0,0,0.02)}
-      .header{display:flex;align-items:center;gap:16px}
-      .avatar{width:72px;height:72px;border-radius:8px;overflow:hidden;background:#6c4a3a;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-      h3{font-family:'Playfair Display', serif;color:#4b2e2a;margin:0;font-size:1.6rem}
-      .small-meta{font-size:1rem;color:#6c757d}
-      .list-item{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
-      .book-title{color:#3b2b23;font-weight:600;font-size:1.1rem}
-      .btn-outline-primary{border-color:#8b5e34;color:#8b5e34}
+        :root {
+            --cream:       #faf7f2;
+            --cream-card:  #fffef9;
+            --brown:       #5c3d2e;
+            --brown-light: #7a5444;
+            --brown-pale:  #c4a882;
+            --brown-muted: #9e7e6a;
+            --ink:         #2c1f14;
+            --ink-soft:    #6b5446;
+            --border:      #e8ddd0;
+            --shadow:      rgba(92,61,46,0.08);
+            --danger-soft: #c92a2a;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--cream);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* เมนการ์ดสไตล์กระดาษถนอมสายตา */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--cream-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px var(--shadow);
+            padding: 40px;
+        }
+
+        /* ส่วนหัวโปรไฟล์ */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 16px; /* โค้งมนให้เข้ากับกล่อง Input หน้า Login */
+            overflow: hidden;
+            background: var(--brown-pale);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(196, 168, 130, 0.3);
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .student-id {
+            color: var(--ink-soft);
+            font-size: 1.05rem;
+            margin-top: 4px;
+        }
+
+        /* ปุ่มสไตล์ห้องสมุด */
+        .btn-outline-brown {
+            border: 1.5px solid var(--brown);
+            color: var(--brown);
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: 0.2s;
+        }
+        
+        .btn-outline-brown:hover {
+            background: var(--brown);
+            color: var(--cream);
+        }
+
+        .btn-logout {
+            color: var(--brown-muted);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            transition: 0.2s;
+        }
+
+        .btn-logout:hover {
+            color: var(--danger-soft);
+            background: rgba(201, 42, 42, 0.05);
+            border-radius: 8px;
+        }
+
+        /* รายการหนังสือ */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--brown);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* กล่องหนังสือแต่ละเล่ม */
+        .book-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: #ffffff;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .book-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        .book-title {
+            color: var(--ink);
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .book-author {
+            color: var(--ink-soft);
+            font-size: 0.95rem;
+        }
+
+        .due-date {
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            background: var(--cream);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .fine-text {
+            color: var(--danger-soft);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .alert-custom {
+            background-color: #fdf2f2;
+            border: 1px solid #f9d5d5;
+            color: #9b2c2c;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 576px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .header-actions {
+                margin-top: 16px;
+                justify-content: center;
+                width: 100%;
+            }
+            .book-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .book-meta {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .fine-text {
+                margin-top: 0;
+            }
+        }
     </style>
   </head>
   <body>
-    <div class="container-min">
-      <div class="header">
+    <div class="profile-container">
+      
+      <div class="profile-header">
         <div class="avatar">
-          <img src="https://ui-avatars.com/api/?name={{ member.name|default:student_id }}&background=6c4a3a&color=fff&rounded=true&size=128" alt="avatar" style="width:100%;height:100%;object-fit:cover">
+          <img src="https://ui-avatars.com/api/?name={{ member.name|default:student_id }}&background=c4a882&color=2c1f14&rounded=true&size=128" alt="avatar" style="width:100%;height:100%;object-fit:cover">
         </div>
-        <div>
-          <h3 class="mb-0">{{ member.name|default:'Member' }}</h3>
-          <div class="small-meta">SSID: {{ student_id|default:'(not set)' }}</div>
+        <div class="flex-grow-1">
+          <h3>{{ member.name|default:'Member' }}</h3>
+          <div class="student-id">SSID: {{ student_id|default:'(not set)' }}</div>
         </div>
-        <div class="ms-auto d-flex align-items-center" style="gap:8px">
-          <a class="btn btn-sm btn-outline-primary" href="{% url 'member:history' %}">History</a>
-          <a class="btn btn-sm btn-outline-secondary" href="{% url 'member:logout' %}">Logout</a>
+        <div class="d-flex align-items-center header-actions" style="gap:12px">
+          <a class="btn-outline-brown text-decoration-none" href="{% url 'member:history' %}">📖 Borrowing History</a>
+          <a class="btn-logout" href="{% url 'member:logout' %}">Logout</a>
         </div>
       </div>
 
-      <div style="margin-top:16px">
-        
-        <!-- Active Borrows (history removed; use full history page) -->
+      <div>
         {% if student_id and not member %}
-            <div class="alert alert-warning">Member with SSID "{{ student_id }}" not found.</div>
+            <div class="alert-custom">
+                <strong>Notice:</strong> Member with SSID "{{ student_id }}" not found.
+            </div>
         {% else %}
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <div style="font-weight:600">Active Borrows</div>
+          
+          <div class="section-title">
+            📚 Currently Borrowing
           </div>
 
-          <div class="mt-3">
+          <div class="mt-4">
             {% if borrows and borrows|length > 0 %}
               {% for record in borrows %}
-              <div class="list-item">
+              <div class="book-item">
                 <div>
                   <div class="book-title">{{ record.book.name }}</div>
-                  <div class="small-meta">by {{ record.book.author }}</div>
+                  <div class="book-author">by {{ record.book.author }}</div>
                 </div>
-                <div class="text-end small-meta">
-                  <div>Due: {{ record.due_date }}</div>
-                  <div class="text-danger">Fine: {{ record.fine }}</div>
+                
+                <div class="book-meta text-end">
+                  <div class="due-date">Due: <strong>{{ record.due_date }}</strong></div>
+                  
+                  {% if record.fine and record.fine > 0 %}
+                  <div class="fine-text">Fine: {{ record.fine }} ฿</div>
+                  {% endif %}
                 </div>
               </div>
               {% endfor %}
             {% else %}
-              <p class="text-muted">No active borrows.</p>
+              <div class="text-center" style="padding: 40px; color: var(--brown-muted); border: 2px dashed var(--border); border-radius: 12px;">
+                 <div style="font-size: 2rem; margin-bottom: 10px;">🍃</div>
+                 You have no active borrows at the moment.<br>
+              </div>
             {% endif %}
           </div>
         {% endif %}
       </div>
-      </div>
+      
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

@@ -1,6 +1,52 @@
 {% extends 'librarian/base.html' %}
 
 {% block content %}
+<style>
+.status-tabs {
+    display: flex;
+    gap: 8px;
+}
+.status-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--cream-card);
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.18s;
+}
+.status-tab:hover {
+    border-color: var(--brown-pale);
+    color: var(--brown);
+    background: var(--cream-dark);
+}
+.status-tab.active {
+    background: var(--brown);
+    border-color: var(--brown);
+    color: var(--cream);
+    font-weight: 600;
+}
+.status-tab.active .status-tab-count {
+    background: rgba(255,255,255,0.22);
+    color: var(--cream);
+}
+.status-tab-count {
+    display: inline-block;
+    background: var(--cream-dark);
+    border-radius: 20px;
+    padding: 1px 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+}
+.status-tab-count.available { background: #eef5f0; color: var(--success); }
+.status-tab-count.borrowed  { background: #fef3e2; color: #92600a; }
+</style>
 
 <div class="d-flex justify-content-between align-items-center" style="margin:28px 0 24px;">
     <div class="page-header" style="margin:0;">
@@ -13,12 +59,32 @@
 </div>
 
 <!-- Search -->
-<form class="search-bar mb-4" method="get">
+<form class="search-bar mb-3" method="get">
     <input class="form-control" type="search" name="q"
            placeholder="Search by name, author, or category..."
-           value="{{ request.GET.q }}">
+           value="{{ query }}">
+    {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
     <button class="btn btn-brown" type="submit">Search</button>
 </form>
+
+<!-- Status Tabs -->
+<div class="status-tabs mb-4">
+    <a href="?{% if query %}q={{ query }}{% endif %}"
+       class="status-tab {% if not status_filter %}active{% endif %}">
+        All
+        <span class="status-tab-count">{{ total_count }}</span>
+    </a>
+    <a href="?{% if query %}q={{ query }}&{% endif %}status=available"
+       class="status-tab {% if status_filter == 'available' %}active{% endif %}">
+        Available
+        <span class="status-tab-count available">{{ available_count }}</span>
+    </a>
+    <a href="?{% if query %}q={{ query }}&{% endif %}status=borrowed"
+       class="status-tab {% if status_filter == 'borrowed' %}active{% endif %}">
+        Borrowed
+        <span class="status-tab-count borrowed">{{ borrowed_count }}</span>
+    </a>
+</div>
 
 <!-- Table -->
 <div class="lib-table-wrap">
@@ -36,7 +102,7 @@
         <tbody>
             {% for book in books %}
             <tr>
-                <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ book.id }}</td>
+                <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ book.id|stringformat:"04d" }}</td>
                 <td style="font-weight:500;">{{ book.name }}</td>
                 <td style="color:var(--ink-soft);">{{ book.author }}</td>
                 <td style="color:var(--ink-soft);">{{ book.category.name }}</td>

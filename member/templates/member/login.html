@@ -163,31 +163,61 @@
                 </div>
 
                 <div class="card-parchment">
+                    {% if step == 'password' %}
+                    <!-- Step 2: Password for admin -->
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="step" value="password">
+
+                        <div class="mb-4">
+                            <label class="form-label" style="font-weight:600;color:var(--brown);">Admin ID</label>
+                            <input type="text" class="form-control" value="{{ pending_ssid }}" disabled>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label" style="font-weight:600;color:var(--brown);">Password</label>
+                            <input id="id_password" name="password" type="password"
+                                   class="form-control"
+                                   placeholder="Enter your password"
+                                   required autofocus>
+                            {% if password_error %}
+                                <div class="text-danger mt-2" style="font-size: 0.85rem;">{{ password_error }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-brown w-100">Sign In →</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="?cancel=1" style="font-size:0.9rem;color:var(--brown-muted);">← Use a different ID</a>
+                    </div>
+
+                    {% else %}
+                    <!-- Step 1: SSID entry -->
                     {% if form.errors %}
                     <div class="alert alert-danger mb-4" style="font-size: 0.9rem; border-radius: 8px;">
-                        <strong>Sign in failed.</strong> Please check your Student ID.
+                        <strong>Sign in failed.</strong> Please check your SSID.
                     </div>
                     {% endif %}
 
                     <form method="post" novalidate>
                         {% csrf_token %}
-                        
+                        <input type="hidden" name="step" value="ssid">
+
                         <div class="mb-4">
-                            <label for="id_student_id" class="form-label" style="font-weight:600;color:var(--brown);">Student ID</label>
-                            <input id="id_student_id" name="student_id" type="text" 
-                                   class="form-control" 
-                                   value="{{ form.student_id.value|default:'' }}" 
-                                   placeholder="Enter your student ID" 
+                            <label for="id_student_id" class="form-label" style="font-weight:600;color:var(--brown);">Your SSID</label>
+                            <input id="id_student_id" name="student_id" type="text"
+                                   class="form-control"
+                                   value="{{ form.student_id.value|default:'' }}"
+                                   placeholder="Enter your SSID"
                                    required autofocus>
                             {% if form.student_id.errors %}
                                 <div class="text-danger mt-2" style="font-size: 0.85rem;">{{ form.student_id.errors.0 }}</div>
                             {% endif %}
                         </div>
 
-                        <button type="submit" class="btn btn-brown w-100">
-                            Enter Reading Room →
-                        </button>
+                        <button type="submit" class="btn btn-brown w-100">Sign In →</button>
                     </form>
+                    {% endif %}
                 </div>
                 
                 <div class="text-center mt-4">

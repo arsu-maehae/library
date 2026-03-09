@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import views as auth_views, login, get_user_model
 from django.urls import reverse_lazy
 from .forms import StudentIDLoginForm
 from librarian.models import Member as LibrarianMember, BorrowRecord
@@ -25,22 +25,59 @@ class CustomLoginView(auth_views.LoginView):
 
 
 def login_view(request):
-	"""Accept a single student_id input, store it in session, and redirect to profile."""
-	if request.method == 'POST':
-		form = StudentIDLoginForm(request, data=request.POST)
-		if form.is_valid():
-			student_id = form.cleaned_data['student_id']
-			# If the SSID does not correspond to an existing LibrarianMember,
-			# show an error on the login form instead of redirecting to profile.
-			if not LibrarianMember.objects.filter(ssid=student_id).exists():
-				form.add_error('student_id', 'No member found with that SSID.')
-			else:
-				request.session['student_id'] = student_id
-				return redirect('member:profile')
-	else:
-		form = StudentIDLoginForm()
+	"""Two-step login: SSID → if admin show password step; if member go directly to profile."""
+	User = get_user_model()
 
-	return render(request, 'member/login.html', {'form': form})
+	if request.method == 'POST':
+		step = request.POST.get('step', 'ssid')
+
+		if step == 'ssid':
+			form = StudentIDLoginForm(request, data=request.POST)
+			if form.is_valid():
+				ssid = form.cleaned_data['student_id']
+
+				# Admin SSID → go to password step
+				if User.objects.filter(username=ssid, is_superuser=True, is_active=True).exists():
+					request.session['pending_admin_ssid'] = ssid
+					return redirect('member:login')
+
+				# Member SSID → go straight to profile
+				if LibrarianMember.objects.filter(ssid=ssid).exists():
+					request.session['student_id'] = ssid
+					return redirect('member:profile')
+
+				form.add_error('student_id', 'No account found with that SSID.')
+			return render(request, 'member/login.html', {'form': form, 'step': 'ssid'})
+
+		elif step == 'password':
+			pending_ssid = request.session.get('pending_admin_ssid')
+			if not pending_ssid:
+				return redirect('member:login')
+			from django.contrib.auth import authenticate
+			password = request.POST.get('password', '')
+			user = authenticate(request, username=pending_ssid, password=password)
+			if user and user.is_superuser:
+				del request.session['pending_admin_ssid']
+				login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+				return redirect('manage_books')
+			return render(request, 'member/login.html', {
+				'step': 'password',
+				'pending_ssid': pending_ssid,
+				'password_error': 'Incorrect password. Please try again.',
+			})
+
+	# GET: cancel clears the pending step
+	if request.GET.get('cancel'):
+		request.session.pop('pending_admin_ssid', None)
+		return redirect('member:login')
+
+	# GET: check if we are mid password-step
+	pending_ssid = request.session.get('pending_admin_ssid')
+	if pending_ssid:
+		return render(request, 'member/login.html', {'step': 'password', 'pending_ssid': pending_ssid})
+
+	form = StudentIDLoginForm()
+	return render(request, 'member/login.html', {'form': form, 'step': 'ssid'})
 
 
 def profile(request):
@@ -79,13 +116,27 @@ def history(request):
 	student_id = request.session.get('student_id')
 	member = None
 	history = []
+	status_filter = request.GET.get('status', '')
+	total_count = borrowed_count = returned_count = 0
 	if student_id:
 		member = LibrarianMember.objects.filter(ssid=student_id).first()
 		if member:
-			history = BorrowRecord.objects.filter(member=member).select_related('book').order_by('-start_date')
+			all_records = BorrowRecord.objects.filter(member=member).select_related('book')
+			total_count    = all_records.count()
+			borrowed_count = all_records.filter(return_date__isnull=True).count()
+			returned_count = all_records.filter(return_date__isnull=False).count()
+			history = all_records.order_by('-start_date')
+			if status_filter == 'borrowed':
+				history = history.filter(return_date__isnull=True)
+			elif status_filter == 'returned':
+				history = history.filter(return_date__isnull=False)
 
 	return render(request, 'member/history.html', {
 		'student_id': student_id,
 		'member': member,
 		'history': history,
+		'status_filter': status_filter,
+		'total_count': total_count,
+		'borrowed_count': borrowed_count,
+		'returned_count': returned_count,
 	})

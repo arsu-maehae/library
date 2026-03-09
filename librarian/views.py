@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef
 from django.utils import timezone
 from datetime import timedelta, datetime
 from .models import Book, Category, Member, BorrowRecord
@@ -68,17 +68,40 @@ def manage_books(request):
         return redirect('manage_books')
 
     query = request.GET.get('q', '')
-    books = Book.objects.all()
+    status_filter = request.GET.get('status', '')
+
+    # Annotate each book with a boolean `_is_borrowed` usable in ORM filters
+    active_borrow = BorrowRecord.objects.filter(book=OuterRef('pk'), return_date__isnull=True)
+    books = Book.objects.select_related('category').annotate(
+        _is_borrowed=Exists(active_borrow)
+    )
+
+    total_count     = Book.objects.count()
+    available_count = books.filter(_is_borrowed=False).count()
+    borrowed_count  = books.filter(_is_borrowed=True).count()
+
     if query:
         books = books.filter(
-            Q(name__icontains=query) | 
-            Q(author__icontains=query) | 
+            Q(name__icontains=query) |
+            Q(author__icontains=query) |
             Q(category__name__icontains=query) |
             Q(isbn__icontains=query)
         )
-    
+    if status_filter == 'available':
+        books = books.filter(_is_borrowed=False)
+    elif status_filter == 'borrowed':
+        books = books.filter(_is_borrowed=True)
+
     categories = Category.objects.all()
-    return render(request, 'librarian/manage_books.html', {'books': books, 'categories': categories})
+    return render(request, 'librarian/manage_books.html', {
+        'books': books,
+        'categories': categories,
+        'total_count': total_count,
+        'available_count': available_count,
+        'borrowed_count': borrowed_count,
+        'status_filter': status_filter,
+        'query': query,
+    })
 
 @login_required
 @user_passes_test(is_admin)
@@ -92,7 +115,7 @@ def active_borrows(request):
         return redirect('active_borrows')
 
     query = request.GET.get('ssid', '')
-    records = BorrowRecord.objects.filter(return_date__isnull=True)
+    records = BorrowRecord.objects.filter(return_date__isnull=True).order_by('book__id')
     if query:
         records = records.filter(member__ssid__icontains=query)
         
@@ -128,19 +151,33 @@ def borrow_process(request):
         elif book.is_borrowed:
             context['error'] = f"Book '{book.name}' is already borrowed."
         else:
-            days_to_add = duration
-            if unit == 'months':
-                days_to_add = duration * 30
-            elif unit == 'years':
-                days_to_add = duration * 365
-            
-            BorrowRecord.objects.create(
-                book=book,
+            # Check if member has any overdue (fine > 0) unreturned books
+            overdue_records = BorrowRecord.objects.filter(
                 member=member,
-                start_date=start_date,
-                due_date=start_date + timedelta(days=days_to_add)
-            )
-            context['success'] = f"Successfully borrowed '{book.name}' to {member.name} ({member.ssid})."
+                return_date__isnull=True,
+                due_date__lt=timezone.now().date()
+            ).select_related('book')
+            if overdue_records.exists():
+                overdue_titles = ', '.join(f"'{r.book.name}'" for r in overdue_records)
+                context['error'] = (
+                    f"Member '{member.ssid}' has overdue book(s): {overdue_titles}. "
+                    f"Please return them before borrowing again."
+                )
+                context['overdue_records'] = overdue_records
+            else:
+                days_to_add = duration
+                if unit == 'months':
+                    days_to_add = duration * 30
+                elif unit == 'years':
+                    days_to_add = duration * 365
+
+                BorrowRecord.objects.create(
+                    book=book,
+                    member=member,
+                    start_date=start_date,
+                    due_date=start_date + timedelta(days=days_to_add)
+                )
+                context['success'] = f"Successfully borrowed '{book.name}' to {member.name} ({member.ssid})."
 
     return render(request, 'librarian/borrow_process.html', context)
 
@@ -155,14 +192,30 @@ def return_book(request):
         return redirect(f"{request.path}?ssid={record.member.ssid}")
 
     ssid = request.GET.get('ssid', '')
+    status_filter = request.GET.get('status', '')
     records = []
     member = None
+    active_count = returned_count = total_count = 0
     if ssid:
         member = Member.objects.filter(ssid=ssid).first()
         if member:
-            records = BorrowRecord.objects.filter(member=member).order_by('-start_date')
-    
-    return render(request, 'librarian/return_book.html', {'records': records, 'ssid': ssid, 'member': member})
+            all_records = BorrowRecord.objects.filter(member=member)
+            total_count   = all_records.count()
+            active_count  = all_records.filter(return_date__isnull=True).count()
+            returned_count = all_records.filter(return_date__isnull=False).count()
+            records = all_records.order_by('-start_date')
+            if status_filter == 'active':
+                records = records.filter(return_date__isnull=True)
+            elif status_filter == 'returned':
+                records = records.filter(return_date__isnull=False)
+
+    return render(request, 'librarian/return_book.html', {
+        'records': records, 'ssid': ssid, 'member': member,
+        'status_filter': status_filter,
+        'total_count': total_count,
+        'active_count': active_count,
+        'returned_count': returned_count,
+    })
 
 @login_required
 @user_passes_test(is_admin)
@@ -176,6 +229,12 @@ def manage_users(request):
                 email=request.POST.get('email'),
                 phone=request.POST.get('phone')
             )
+        elif action == 'edit':
+            member = get_object_or_404(Member, id=request.POST.get('member_id'))
+            member.name = request.POST.get('name')
+            member.email = request.POST.get('email')
+            member.phone = request.POST.get('phone')
+            member.save()
         elif action == 'remove':
             Member.objects.filter(ssid=request.POST.get('ssid')).delete()
         return redirect('manage_users')
@@ -186,6 +245,12 @@ def manage_users(request):
         members = members.filter(ssid__icontains=query)
         
     return render(request, 'librarian/manage_users.html', {'members': members})
+
+from django.contrib.auth import logout as auth_logout
+
+def admin_logout(request):
+    auth_logout(request)
+    return redirect('member:login')
 
 @login_required
 @user_passes_test(is_admin)

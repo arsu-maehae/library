@@ -474,7 +474,7 @@
 <body>
     <nav class="lib-nav">
         <div class="container">
-            <a class="lib-brand" href="#">
+            <a class="lib-brand" href="{% url 'manage_books' %}">
                 <span></span>Library Admin
             </a>
 
@@ -502,8 +502,7 @@
 
             <div class="nav-right">
                 <span class="nav-admin-label">Admin: <strong>{{ user.username }}</strong></span>
-                <form action="{% url 'logout' %}" method="post" class="d-inline">
-                    {% csrf_token %}
+                <form action="{% url 'logout' %}" method="get" class="d-inline">
                     <button type="submit" class="btn btn-logout">Logout</button>
                 </form>
             </div>

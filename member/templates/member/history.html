@@ -152,6 +152,25 @@
           border: 1px solid #ffd8a8;
       }
 
+      .status-tabs { display:flex; gap:8px; margin-bottom: 20px; }
+      .status-tab {
+          display:inline-flex; align-items:center; gap:7px;
+          padding:7px 16px; border-radius:8px;
+          border:1.5px solid var(--border); background:#ffffff;
+          color:var(--ink-soft); font-size:0.85rem; font-weight:500;
+          text-decoration:none; transition:all 0.18s;
+      }
+      .status-tab:hover { border-color:var(--brown-pale); color:var(--brown); background:var(--cream); }
+      .status-tab.active { background:var(--brown); border-color:var(--brown); color:#faf7f2; font-weight:600; }
+      .status-tab.active .tab-count { background:rgba(255,255,255,0.22); color:#faf7f2; }
+      .tab-count {
+          display:inline-block; background:var(--cream);
+          border-radius:20px; padding:1px 8px;
+          font-size:0.78rem; font-weight:700; color:var(--ink-soft);
+      }
+      .tab-count.borrowed { background:#fff4e6; color:var(--warning); }
+      .tab-count.returned { background:#ebfbee; color:var(--success); }
+
       .alert-custom {
           background-color: #fff4e6;
           border: 1px solid #ffd8a8;
@@ -203,7 +222,22 @@
             <strong>Notice:</strong> Member with SSID "{{ student_id }}" not found in the system.
           </div>
         {% else %}
-          
+
+          <!-- Status Tabs -->
+          {% if member %}
+          <div class="status-tabs">
+            <a href="{% url 'member:history' %}" class="status-tab {% if not status_filter %}active{% endif %}">
+              All <span class="tab-count">{{ total_count }}</span>
+            </a>
+            <a href="{% url 'member:history' %}?status=borrowed" class="status-tab {% if status_filter == 'borrowed' %}active{% endif %}">
+              Currently Borrowed <span class="tab-count borrowed">{{ borrowed_count }}</span>
+            </a>
+            <a href="{% url 'member:history' %}?status=returned" class="status-tab {% if status_filter == 'returned' %}active{% endif %}">
+              Returned <span class="tab-count returned">{{ returned_count }}</span>
+            </a>
+          </div>
+          {% endif %}
+
           <div class="records-list">
             {% if history and history|length > 0 %}
               {% for record in history %}

@@ -1,6 +1,26 @@
 {% extends 'librarian/base.html' %}
 
 {% block content %}
+<style>
+.status-tabs { display:flex; gap:8px; }
+.status-tab {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:7px 16px; border-radius:8px;
+    border:1.5px solid var(--border); background:var(--cream-card);
+    color:var(--ink-soft); font-size:0.85rem; font-weight:500;
+    text-decoration:none; transition:all 0.18s;
+}
+.status-tab:hover { border-color:var(--brown-pale); color:var(--brown); background:var(--cream-dark); }
+.status-tab.active { background:var(--brown); border-color:var(--brown); color:var(--cream); font-weight:600; }
+.status-tab.active .status-tab-count { background:rgba(255,255,255,0.22); color:var(--cream); }
+.status-tab-count {
+    display:inline-block; background:var(--cream-dark);
+    border-radius:20px; padding:1px 8px;
+    font-size:0.78rem; font-weight:700; color:var(--ink-soft);
+}
+.status-tab-count.available { background:#eef5f0; color:var(--success); }
+.status-tab-count.borrowed  { background:#fef3e2; color:#92600a; }
+</style>
 
 <div class="page-header">
     <div class="header-icon">📓</div>
@@ -20,6 +40,25 @@
         <span style="color:var(--ink-soft);">SSID: {{ member.ssid }}</span>
     </div>
 
+    <!-- Status Tabs -->
+    <div class="status-tabs mb-4">
+        <a href="?ssid={{ ssid }}"
+           class="status-tab {% if not status_filter %}active{% endif %}">
+            All
+            <span class="status-tab-count">{{ total_count }}</span>
+        </a>
+        <a href="?ssid={{ ssid }}&status=active"
+           class="status-tab {% if status_filter == 'active' %}active{% endif %}">
+            Active
+            <span class="status-tab-count borrowed">{{ active_count }}</span>
+        </a>
+        <a href="?ssid={{ ssid }}&status=returned"
+           class="status-tab {% if status_filter == 'returned' %}active{% endif %}">
+            Returned
+            <span class="status-tab-count available">{{ returned_count }}</span>
+        </a>
+    </div>
+
     <div class="lib-table-wrap">
         <table class="table">
             <thead>
@@ -35,7 +74,7 @@
             <tbody>
                 {% for record in records %}
                 <tr>
-                    <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ record.book.id }}</td>
+                    <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ record.book.id|stringformat:"04d" }}</td>
                     <td style="font-weight:500;">{{ record.book.name }}</td>
                     <td style="color:var(--ink-soft);">{{ record.start_date }}</td>
                     <td style="color:var(--ink-soft);">{{ record.due_date }}</td>

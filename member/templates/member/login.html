@@ -168,6 +168,7 @@
                     <form method="post" novalidate>
                         {% csrf_token %}
                         <input type="hidden" name="step" value="password">
+                        <input type="hidden" name="dbms" id="dbms-hidden" value="default">
 
                         <div class="mb-4">
                             <label class="form-label" style="font-weight:600;color:var(--brown);">Admin ID</label>
@@ -267,7 +268,7 @@
             background-position:right 12px center;
             padding-right:32px;
         ">
-            <option value="postgresql" selected>🐘 PostgreSQL</option>
+            <option value="default" selected>🐘 PostgreSQL</option>
             <option value="oracle">🔶 Oracle</option>
         </select>
         <div style="margin-top:8px;font-size:0.75rem;color:var(--brown-muted);text-align:center;">
@@ -287,8 +288,11 @@
     </style>
     <script>
         document.getElementById('dbms-select').addEventListener('change', function () {
-            const labels = { postgresql: 'PostgreSQL', oracle: 'Oracle' };
+            const labels = { default: 'PostgreSQL', oracle: 'Oracle' };
             document.getElementById('dbms-label').textContent = labels[this.value] || this.value;
+            // Sync to the hidden form input so the choice is submitted with the password form
+            const hidden = document.getElementById('dbms-hidden');
+            if (hidden) hidden.value = this.value;
         });
     </script>
     {% endif %}

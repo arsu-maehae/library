@@ -61,7 +61,11 @@ def login_view(request):
 			password = request.POST.get('password', '')
 			user = authenticate(request, username=profile.user.username, password=password)
 			if user and user.is_superuser:
+				dbms = request.POST.get('dbms', 'default')
+				if dbms not in ('default', 'oracle'):
+					dbms = 'default'
 				del request.session['pending_admin_ssid']
+				request.session['dbms'] = dbms
 				login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 				return redirect('manage_books')
 			return render(request, 'member/login.html', {

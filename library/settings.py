@@ -90,13 +90,13 @@ DATABASES = {
         'PORT': os.getenv('PG_PORT', '5432'),
     },
     # Oracle — used when admin logs in with DBMS = Oracle
+    # NAME must be a full DSN string (host:port/service) so that
+    # Django passes it directly to oracledb without wrapping it as a SID.
     'oracle': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': os.getenv('ORA_NAME', 'XE'),
+        'NAME': os.getenv('ORA_NAME', '//localhost:1521/XEPDB1'),
         'USER': os.getenv('ORA_USER'),
         'PASSWORD': os.getenv('ORA_PASSWORD'),
-        'HOST': os.getenv('ORA_HOST', 'localhost'),
-        'PORT': os.getenv('ORA_PORT', '1521'),
     },
 }
 

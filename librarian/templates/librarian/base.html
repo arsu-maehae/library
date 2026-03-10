@@ -501,7 +501,7 @@
             </div>
 
             <div class="nav-right">
-                <span class="nav-admin-label">Admin: <strong>{{ user.username }}</strong></span>
+                <span class="nav-admin-label">Admin: <strong>{{ user.admin_profile.admin_name|default:user.username }}</strong></span>
                 <form action="{% url 'logout' %}" method="get" class="d-inline">
                     <button type="submit" class="btn btn-logout">Logout</button>
                 </form>

@@ -17,20 +17,17 @@
             <div style="background:var(--brown);padding:28px 20px 56px;position:relative;">
                 <div style="position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);">
                     <div style="width:72px;height:72px;background:var(--cream-dark);border-radius:50%;border:3px solid var(--cream-card);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--brown);box-shadow:0 2px 12px var(--shadow-md);">
-                        {{ user.username|slice:":2"|upper }}
+                        {{ profile.admin_name|default:user.username|slice:":2"|upper }}
                     </div>
                 </div>
             </div>
 
             <div style="padding:52px 24px 28px;text-align:center;">
-                <h4 style="font-family:'Playfair Display',serif;font-size:1.15rem;margin:0 0 2px;">{{ user.username }}</h4>
-                <p style="color:var(--ink-soft);font-size:0.8rem;margin:0 0 20px;">Administrator</p>
+                <h4 style="font-family:'Playfair Display',serif;font-size:1.15rem;margin:0 0 2px;">{{ profile.admin_name|default:user.username }}</h4>
+                <p style="color:var(--ink-soft);font-size:0.8rem;margin:0 0 4px;">Administrator</p>
+                <p style="color:var(--brown-muted);font-size:0.78rem;margin:0 0 20px;">SSID: {{ profile.admin_id }}</p>
 
                 <div style="border-top:1px solid var(--border);padding-top:18px;text-align:left;">
-                    <div class="mb-3">
-                        <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--brown-muted);margin-bottom:3px;">Email</div>
-                        <div style="font-size:0.875rem;color:var(--ink);">{{ user.email|default:"—" }}</div>
-                    </div>
                     <div class="mb-3">
                         <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--brown-muted);margin-bottom:3px;">Date Joined</div>
                         <div style="font-size:0.875rem;color:var(--ink);">{{ user.date_joined|date:"d M Y" }}</div>
@@ -51,8 +48,14 @@
                 <span style="font-weight:600;font-size:0.875rem;color:var(--brown);">Change Password</span>
             </div>
             <div style="padding:24px;">
+                {% if pw_success %}
+                <div style="background:#eef5f0;border:1px solid #b8d9c0;color:var(--success);border-radius:8px;padding:10px 14px;font-size:0.875rem;margin-bottom:16px;font-weight:500;">
+                    Password updated successfully.
+                </div>
+                {% endif %}
                 <form method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
                     {% for field in form %}
                     <div class="mb-4">
                         <label class="form-label">{{ field.label }}</label>
@@ -84,5 +87,7 @@
         });
     });
 </script>
+
+
 
 {% endblock %}

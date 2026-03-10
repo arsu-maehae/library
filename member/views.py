@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views, login, get_user_model
 from django.urls import reverse_lazy
 from .forms import StudentIDLoginForm
-from librarian.models import Member as LibrarianMember, BorrowRecord
+from librarian.models import Member as LibrarianMember, BorrowRecord, AdminProfile
 
 
 class CustomLoginView(auth_views.LoginView):
@@ -36,8 +36,9 @@ def login_view(request):
 			if form.is_valid():
 				ssid = form.cleaned_data['student_id']
 
-				# Admin SSID → go to password step
-				if User.objects.filter(username=ssid, is_superuser=True, is_active=True).exists():
+				# Admin SSID → look up via AdminProfile.admin_id
+				profile = AdminProfile.objects.filter(admin_id=ssid).select_related('user').first()
+				if profile and profile.user.is_superuser and profile.user.is_active:
 					request.session['pending_admin_ssid'] = ssid
 					return redirect('member:login')
 
@@ -53,9 +54,12 @@ def login_view(request):
 			pending_ssid = request.session.get('pending_admin_ssid')
 			if not pending_ssid:
 				return redirect('member:login')
+			profile = AdminProfile.objects.filter(admin_id=pending_ssid).select_related('user').first()
+			if not profile:
+				return redirect('member:login')
 			from django.contrib.auth import authenticate
 			password = request.POST.get('password', '')
-			user = authenticate(request, username=pending_ssid, password=password)
+			user = authenticate(request, username=profile.user.username, password=password)
 			if user and user.is_superuser:
 				del request.session['pending_admin_ssid']
 				login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -88,7 +92,7 @@ def profile(request):
 	if student_id:
 		member = LibrarianMember.objects.filter(ssid=student_id).first()
 		if member:
-			borrows = BorrowRecord.objects.filter(member=member, return_date__isnull=True).select_related('book')
+			borrows = BorrowRecord.objects.filter(member=member, status='borrowing').select_related('book')
 			# full history (including returned records)
 			history = BorrowRecord.objects.filter(member=member).select_related('book').order_by('-start_date')
 	else:
@@ -123,13 +127,13 @@ def history(request):
 		if member:
 			all_records = BorrowRecord.objects.filter(member=member).select_related('book')
 			total_count    = all_records.count()
-			borrowed_count = all_records.filter(return_date__isnull=True).count()
-			returned_count = all_records.filter(return_date__isnull=False).count()
+			borrowed_count = all_records.filter(status='borrowing').count()
+			returned_count = all_records.filter(status='returned').count()
 			history = all_records.order_by('-start_date')
 			if status_filter == 'borrowed':
-				history = history.filter(return_date__isnull=True)
+				history = history.filter(status='borrowing')
 			elif status_filter == 'returned':
-				history = history.filter(return_date__isnull=False)
+				history = history.filter(status='returned')
 
 	return render(request, 'member/history.html', {
 		'student_id': student_id,

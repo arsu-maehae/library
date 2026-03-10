@@ -229,5 +229,69 @@
             </div>
         </div>
     </div>
+
+    {% if step == 'password' %}
+    <!-- DBMS Selector — bottom-right corner, visible only during admin login -->
+    <div id="dbms-selector" style="
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--cream-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(92,61,46,0.13);
+        padding: 14px 18px;
+        z-index: 9999;
+        min-width: 230px;
+        animation: slideUp 0.25s ease-out;
+    ">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div style="width:28px;height:28px;background:#eee8df;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🗄️</div>
+            <span style="font-size:0.78rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;">Database Engine</span>
+        </div>
+        <select id="dbms-select" style="
+            width:100%;
+            border:1.5px solid var(--border);
+            border-radius:8px;
+            padding:8px 12px;
+            background:#fff;
+            color:var(--ink);
+            font-size:0.9rem;
+            font-weight:600;
+            font-family:'DM Sans',sans-serif;
+            cursor:pointer;
+            appearance:none;
+            -webkit-appearance:none;
+            background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235c3d2e' d='M6 8L1 3h10z'/%3E%3C/svg%3E&quot;);
+            background-repeat:no-repeat;
+            background-position:right 12px center;
+            padding-right:32px;
+        ">
+            <option value="postgresql" selected>🐘 PostgreSQL</option>
+            <option value="oracle">🔶 Oracle</option>
+        </select>
+        <div style="margin-top:8px;font-size:0.75rem;color:var(--brown-muted);text-align:center;">
+            Connected via <strong id="dbms-label">PostgreSQL</strong>
+        </div>
+    </div>
+    <style>
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        #dbms-select:focus {
+            outline: none;
+            border-color: var(--brown-pale);
+            box-shadow: 0 0 0 3px rgba(92,61,46,0.08);
+        }
+    </style>
+    <script>
+        document.getElementById('dbms-select').addEventListener('change', function () {
+            const labels = { postgresql: 'PostgreSQL', oracle: 'Oracle' };
+            document.getElementById('dbms-label').textContent = labels[this.value] || this.value;
+        });
+    </script>
+    {% endif %}
+
 </body>
 </html>

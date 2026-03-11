@@ -33,7 +33,7 @@
         <tbody>
             {% for record in records %}
             <tr>
-                <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ record.book.id }}</td>
+                <td style="color:var(--ink-soft);font-size:0.8rem;font-weight:600;">{{ record.book.id|stringformat:"04d" }}</td>
                 <td style="font-weight:500;">{{ record.book.name }}</td>
                 <td style="color:var(--ink-soft);">{{ record.book.author }}</td>
                 <td style="color:var(--ink-soft);">{{ record.member.ssid }}</td>

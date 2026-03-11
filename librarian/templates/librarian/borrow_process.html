@@ -8,14 +8,72 @@
 </div>
 
 {% if error %}
-<div class="alert alert-danger mb-4">
-    <strong>Error:</strong> {{ error }}
-</div>
+<div class="alert alert-success mb-4" style="display:none;"></div>
 {% endif %}
 {% if success %}
 <div class="alert alert-success mb-4">
     <strong>Success!</strong> {{ success }}
 </div>
+{% endif %}
+
+<!-- Error Modal -->
+{% if error %}
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content" style="border-radius:16px;border:none;overflow:hidden;">
+
+            <!-- Header -->
+            <div style="background:#fff5f5;padding:24px 24px 16px;border-bottom:1px solid #ffd5d5;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:40px;height:40px;background:#ffe3e3;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚫</div>
+                    <div>
+                        <div style="font-weight:700;font-size:1.05rem;color:#c92a2a;">Cannot Borrow Right Now</div>
+                        <div style="font-size:0.82rem;color:#e03131;margin-top:2px;">This member has overdue books that must be returned first.</div>
+                    </div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" style="flex-shrink:0;"></button>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body" style="padding:20px 24px;">
+                {% if overdue_records %}
+                <div style="font-size:0.78rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">
+                    Overdue Books ({{ overdue_records|length }})
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    {% for r in overdue_records %}
+                    {% with days_late=r.due_date|timesince %}
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#fffaf9;border:1px solid var(--border);border-radius:10px;">
+                        <div>
+                            <div style="font-weight:600;font-size:0.875rem;color:var(--ink);">{{ r.book.name }}</div>
+                            <div style="font-size:0.78rem;color:var(--ink-soft);margin-top:1px;">Book #{{ r.book.id|stringformat:"04d" }}</div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;margin-left:12px;">
+                            <div style="font-size:0.78rem;color:var(--ink-soft);">Due {{ r.due_date|date:"d M Y" }}</div>
+                            <div style="font-size:0.75rem;font-weight:600;color:#c92a2a;background:#ffe3e3;border-radius:20px;padding:2px 8px;margin-top:3px;display:inline-block;">{{ days_late }} overdue</div>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="margin:0;color:var(--ink-soft);">{{ error }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Footer -->
+            <div style="padding:14px 24px 20px;background:var(--cream);border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+                <button type="button" class="btn btn-brown" data-bs-dismiss="modal" style="min-width:100px;">Got it</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = new bootstrap.Modal(document.getElementById('errorModal'));
+        modal.show();
+    });
+</script>
 {% endif %}
 
 <div style="background:var(--cream-card);border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 12px var(--shadow);overflow:hidden;">

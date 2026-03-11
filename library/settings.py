@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'library.middleware.DBSelectorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -80,31 +81,30 @@ WSGI_APPLICATION = 'library.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-
-ACTIVE_DB = os.getenv('ACTIVE_DB', 'postgresql')
-
-if ACTIVE_DB == 'oracle':
-    DEFAULT_DB = {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': os.getenv('ORA_NAME'),
-        'USER': os.getenv('ORA_USER'),
-        'PASSWORD': os.getenv('ORA_PASSWORD'),
-        'HOST': os.getenv('ORA_HOST', 'localhost'),
-        'PORT': os.getenv('ORA_PORT', '1521'),
-    }
-else:
-    DEFAULT_DB = {
+DATABASES = {
+    # PostgreSQL — always active; also hosts Django auth/sessions
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('PG_NAME'),
         'USER': os.getenv('PG_USER'),
         'PASSWORD': os.getenv('PG_PASSWORD'),
         'HOST': os.getenv('PG_HOST', 'localhost'),
         'PORT': os.getenv('PG_PORT', '5432'),
-    }
-
-DATABASES = {
-    'default': DEFAULT_DB
+    },
+    # Oracle — used when admin logs in with DBMS = Oracle
+    # NAME must be a full DSN string (host:port/service) so that
+    # Django passes it directly to oracledb without wrapping it as a SID.
+    'oracle': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': os.getenv('ORA_NAME', '//localhost:1521/XEPDB1'),
+        'USER': os.getenv('ORA_USER'),
+        'PASSWORD': os.getenv('ORA_PASSWORD'),
+    },
 }
+
+# Route library data queries to whichever DB the admin chose at login;
+# Django auth/session tables always stay on the default (PostgreSQL) DB.
+DATABASE_ROUTERS = ['library.db_router.SessionDBRouter']
 
 
 
@@ -144,5 +144,5 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = '/librarian/auth/'
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/librarian/manage/'

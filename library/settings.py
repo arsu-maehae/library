@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'librarian',
     'member',
+    'sslserver',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

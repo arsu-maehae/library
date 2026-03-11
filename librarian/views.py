@@ -270,7 +270,27 @@ def manage_users(request):
         
     return render(request, 'librarian/manage_users.html', {'members': members})
 
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import logout as auth_logout, authenticate, login as auth_login
+
+def librarian_login(request):
+    error = None
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        dbms = request.POST.get('dbms', 'default')
+        if dbms not in ('default', 'oracle'):
+            dbms = 'default'
+
+        user = authenticate(request, username=username, password=password)
+        if user and user.is_superuser:
+            auth_login(request, user)
+            request.session['dbms'] = dbms # ✅ เก็บ dbms ใน session
+            request.session.modified = True
+            return redirect('manage_books')
+        else:
+            error = 'Invalid username or password.'
+
+    return render(request, 'librarian/login.html', {'error': error})
 
 def admin_logout(request):
     auth_logout(request)

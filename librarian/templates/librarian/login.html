@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Library Admin — Sign In</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream:       #faf7f2;
+            --cream-card:  #fffef9;
+            --brown:       #5c3d2e;
+            --brown-light: #7a5444;
+            --brown-pale:  #c4a882;
+            --brown-muted: #9e7e6a;
+            --ink:         #2c1f14;
+            --ink-soft:    #6b5446;
+            --border:      #e8ddd0;
+            --shadow:      rgba(92,61,46,0.08);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--ink);
+            background-color: var(--cream);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+        }
+
+        .card-parchment {
+            background: var(--cream-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px var(--shadow);
+            padding: 48px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--brown);
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            padding: 12px 16px;
+            background-color: #ffffff;
+            height: 52px;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--brown-pale);
+            box-shadow: 0 0 0 4px rgba(92,61,46,0.06);
+            outline: none;
+        }
+
+        .btn-brown {
+            background: var(--brown);
+            color: var(--cream);
+            border-radius: 8px;
+            border: none;
+            transition: 0.2s ease-in-out;
+            height: 52px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            width: 100%;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .btn-brown:hover {
+            background: #4a3125;
+            color: #fff;
+        }
+
+        .icon-box {
+            width: 64px;
+            height: 64px;
+            background: var(--brown);
+            border-radius: 16px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .error-alert {
+            background: #fdf0f0;
+            border: 1px solid #f5c6c6;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.875rem;
+            color: #c0392b;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+
+        <div class="text-center" style="margin-bottom: 32px;">
+            <div class="icon-box">➕</div>
+            <h1 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ink);margin:0;">
+                Library Admin
+            </h1>
+            <p style="color:var(--ink-soft);font-size:1rem;margin:8px 0 0;">
+                Sign in to manage the collection
+            </p>
+        </div>
+
+        <div class="card-parchment">
+            {% if error %}
+            <div class="error-alert">
+                <strong>Sign in failed.</strong> {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label for="id_username" class="form-label">Username</label>
+                    <input id="id_username" name="username" type="text"
+                           class="form-control"
+                           value="{{ form.username.value|default:'' }}"
+                           placeholder="Enter your username"
+                           required autofocus>
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_password" class="form-label">Password</label>
+                    <input id="id_password" name="password" type="password"
+                           class="form-control"
+                           placeholder="Enter your password"
+                           required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Database Engine</label>
+                    <select name="dbms" id="dbms-select" class="form-control" style="height:52px;cursor:pointer;">
+                        <option value="default">🐘 PostgreSQL</option>
+                        <option value="oracle">🔶 Oracle</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-brown">
+                    Continue →
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" style="font-size:0.85rem;color:var(--brown-muted);text-decoration:none;">
+                ← Back to Student Library
+            </a>
+        </div>
+
+    </div>
+</body>
+</html>

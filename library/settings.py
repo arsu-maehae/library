@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv 
-import os     
-import oracledb
-oracledb.defaults.config_dir = ""                   
+import os                        
 
 load_dotenv()   
 
@@ -103,6 +101,7 @@ DATABASES = {
         'PASSWORD': os.getenv('ORA_PASSWORD'),
     },
 }
+
 # Route library data queries to whichever DB the admin chose at login;
 # Django auth/session tables always stay on the default (PostgreSQL) DB.
 DATABASE_ROUTERS = ['library.db_router.SessionDBRouter']

@@ -4,6 +4,4 @@ __pycache__/
 *.pyc
 .env
 db.sqlite3
-
-# ปิดกั้นไฟล์ PEM ทุกที่ในโปรเจกต์เพื่อความปลอดภัย
-*.pem
+myenv/*.pem
